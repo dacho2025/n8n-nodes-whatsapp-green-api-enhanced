@@ -1168,13 +1168,16 @@ export class GreenApi implements INodeType {
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
 						
-						if (items[i] && items[i].binary && items[i].binary[binaryPropertyName]) {
+						const currentItem = items[i];
+						const binaryData = currentItem?.binary;
+
+						if (binaryData && binaryData[binaryPropertyName]) {
 							// אם יש כבר מידע בינארי בקלט, השתמש בו
-							const binaryData = items[i].binary![binaryPropertyName] as IDataObject;
+							const actualBinaryData = binaryData[binaryPropertyName] as IDataObject;
 							formData.file = {
-								value: Buffer.from(binaryData.data as string, 'base64'),
+								value: Buffer.from(actualBinaryData.data as string, 'base64'),
 								options: {
-									filename: binaryData.fileName || 'unknown_file',
+									filename: actualBinaryData.fileName || 'unknown_file',
 								},
 							};
 						} else {
@@ -1235,13 +1238,16 @@ export class GreenApi implements INodeType {
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
 						
-						if (items[i] && items[i].binary && items[i].binary[binaryPropertyName]) {
+						const currentItem = items[i];
+						const binaryData = currentItem?.binary;
+
+						if (binaryData && binaryData[binaryPropertyName]) {
 							// אם יש כבר מידע בינארי בקלט, השתמש בו
-							const binaryData = items[i].binary![binaryPropertyName] as IDataObject;
+							const actualBinaryData = binaryData[binaryPropertyName] as IDataObject;
 							formData.file = {
-								value: Buffer.from(binaryData.data as string, 'base64'),
+								value: Buffer.from(actualBinaryData.data as string, 'base64'),
 								options: {
-									filename: binaryData.fileName || 'unknown_file',
+									filename: actualBinaryData.fileName || 'unknown_file',
 								},
 							};
 						} else {
@@ -1603,13 +1609,16 @@ export class GreenApi implements INodeType {
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
 						
-						if (items[i] && items[i].binary && items[i].binary[binaryPropertyName]) {
+						const currentItem = items[i];
+						const binaryData = currentItem?.binary;
+
+						if (binaryData && binaryData[binaryPropertyName]) {
 							// אם יש כבר מידע בינארי בקלט, השתמש בו
-							const binaryData = items[i].binary![binaryPropertyName] as IDataObject;
+							const actualBinaryData = binaryData[binaryPropertyName] as IDataObject;
 							formData.file = {
-								value: Buffer.from(binaryData.data as string, 'base64'),
+								value: Buffer.from(actualBinaryData.data as string, 'base64'),
 								options: {
-									filename: binaryData.fileName || 'unknown_file',
+									filename: actualBinaryData.fileName || 'unknown_file',
 								},
 							};
 						} else {
