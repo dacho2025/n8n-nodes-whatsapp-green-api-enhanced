@@ -59,28 +59,16 @@ export class GreenApi implements INodeType {
 				},
 				options: [
 					{
+						name: 'Forward Messages',
+						value: 'forwardMessages',
+						description: 'Forward messages to a chat',
+						action: 'Forward messages to a chat',
+					},
+					{
 						name: 'Send',
 						value: 'send',
 						description: 'Send a text message',
 						action: 'Send a message',
-					},
-					{
-						name: 'Send File By URL',
-						value: 'sendFileByUrl',
-						description: 'Send a file from a URL',
-						action: 'Send a file from a URL',
-					},
-					{
-						name: 'Send Poll',
-						value: 'sendPoll',
-						description: 'Send a poll message',
-						action: 'Send a poll message',
-					},
-					{
-						name: 'Send Location',
-						value: 'sendLocation',
-						description: 'Send a location message',
-						action: 'Send a location message',
 					},
 					{
 						name: 'Send Contact',
@@ -89,10 +77,22 @@ export class GreenApi implements INodeType {
 						action: 'Send a contact message',
 					},
 					{
-						name: 'Forward Messages',
-						value: 'forwardMessages',
-						description: 'Forward messages to a chat',
-						action: 'Forward messages to a chat',
+						name: 'Send File By URL',
+						value: 'sendFileByUrl',
+						description: 'Send a file from a URL',
+						action: 'Send a file from a URL',
+					},
+					{
+						name: 'Send Location',
+						value: 'sendLocation',
+						description: 'Send a location message',
+						action: 'Send a location message',
+					},
+					{
+						name: 'Send Poll',
+						value: 'sendPoll',
+						description: 'Send a poll message',
+						action: 'Send a poll message',
 					},
 				],
 				default: 'send',
@@ -278,7 +278,7 @@ export class GreenApi implements INodeType {
 						],
 					},
 				},
-				description: 'Allow multiple answers in poll',
+				description: 'Whether to allow multiple answers in poll',
 			},
 			// הגדרות שליחת מיקום
 			{
