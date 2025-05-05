@@ -120,7 +120,7 @@ export class GreenApi implements INodeType {
 					},
 				},
 				placeholder: '972501234567@c.us or 972501234567-1581234048@g.us',
-				description: 'Chat ID. For private chat use phone@c.us, for group chat use chatId@g.us.',
+				description: 'Chat ID. For private chat use phone@c.us, for group chat use chatId@g.us',
 			},
 			// הגדרת מקור Chat ID להעברת הודעות
 			{
@@ -229,7 +229,7 @@ export class GreenApi implements INodeType {
 				name: 'caption',
 				type: 'string',
 				default: '',
-
+				required: false,
 				displayOptions: {
 					show: {
 						resource: [
