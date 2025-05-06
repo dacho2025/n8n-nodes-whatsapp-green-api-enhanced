@@ -8,6 +8,13 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
+// הוספת הרחבה לממשק INodeTypeDescription
+declare module 'n8n-workflow' {
+	interface INodeTypeDescription {
+		usableAsTool?: boolean;
+	}
+}
+
 export class GreenApi implements INodeType {
 	description: INodeTypeDescription = {
 		// מידע בסיסי על הנוד
@@ -23,6 +30,7 @@ export class GreenApi implements INodeType {
 		},
 		inputs: ['main'],
 		outputs: ['main'],
+		usableAsTool: true,
 		credentials: [
 			{
 				name: 'greenApi',
