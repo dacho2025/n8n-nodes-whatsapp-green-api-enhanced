@@ -6,9 +6,6 @@ import {
 	INodeTypeDescription,
 	JsonObject,
 	NodeOperationError,
-	IWebhookFunctions,
-	IWebhookResponseData,
-	NodeConnectionType,
 } from 'n8n-workflow';
 
 // הוספת הרחבה לממשק INodeTypeDescription
@@ -24,38 +21,20 @@ export class GreenApi implements INodeType {
 		displayName: 'Green API',
 		name: 'greenApi',
 		icon: 'file:greenApi.svg',
-		group: ['communication', 'trigger'],
+		group: ['communication'],
 		version: 1,
-		subtitle: '={{$parameter["resource"] === "trigger" ? "Webhook Trigger" : $parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Send WhatsApp messages via Green API and receive webhooks',
+		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		description: 'Send WhatsApp messages via Green API',
 		defaults: {
 			name: 'Green API',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		usableAsTool: true,
 		credentials: [
 			{
 				name: 'greenApi',
-				required: false,
-				displayOptions: {
-					show: {
-						resource: [
-							'message',
-							'group',
-							'chat',
-							'contact',
-						],
-					},
-				},
-			},
-		],
-		webhooks: [
-			{
-				name: 'default',
-				httpMethod: 'POST',
-				responseMode: 'onReceived',
-				path: 'webhook',
+				required: true,
 			},
 		],
 		properties: [
@@ -67,24 +46,20 @@ export class GreenApi implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Chat',
-						value: 'chat',
-					},
-					{
-						name: 'Contact',
-						value: 'contact',
+						name: 'Message',
+						value: 'message',
 					},
 					{
 						name: 'Group',
 						value: 'group',
 					},
 					{
-						name: 'Message',
-						value: 'message',
+						name: 'Chat',
+						value: 'chat',
 					},
 					{
-						name: 'Trigger',
-						value: 'trigger',
+						name: 'Contact',
+						value: 'contact',
 					},
 				],
 				default: 'message',
@@ -941,177 +916,7 @@ export class GreenApi implements INodeType {
 				placeholder: '10',
 				description: 'Number of contacts to return (0 for all)',
 			},
-			// הגדרת פעולות לטריגר
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: [
-							'trigger',
-						],
-					},
-				},
-				options: [
-					{
-						name: 'Webhook',
-						value: 'webhook',
-						description: 'Listen for incoming webhooks from Green API',
-						action: 'Listen for incoming webhooks',
-					},
-				],
-				default: 'webhook',
-			},
-			// פילטר סוג צ'אט
-			{
-				displayName: 'Chat Type Filter',
-				name: 'chatTypeFilter',
-				type: 'options',
-				default: 'all',
-				displayOptions: {
-					show: {
-						resource: [
-							'trigger',
-						],
-						operation: [
-							'webhook',
-						],
-					},
-				},
-				options: [
-					{
-						name: 'All Chats',
-						value: 'all',
-						description: 'Trigger for all types of chats',
-					},
-					{
-						name: 'Private Chats Only',
-						value: 'private',
-						description: 'Trigger only for private chats (ends with @c.us)',
-					},
-					{
-						name: 'Group Chats Only',
-						value: 'group',
-						description: 'Trigger only for group chats (ends with @g.us)',
-					},
-				],
-				description: 'Filter by chat type',
-			},
-			// פילטר סוג הודעה
-			{
-				displayName: 'Message Type Filter',
-				name: 'messageTypeFilter',
-				type: 'options',
-				default: 'all',
-				displayOptions: {
-					show: {
-						resource: [
-							'trigger',
-						],
-						operation: [
-							'webhook',
-						],
-					},
-				},
-				options: [
-					{
-						name: 'All Messages',
-						value: 'all',
-						description: 'Trigger for all message types',
-					},
-					{
-						name: 'Audio Messages Only',
-						value: 'audioMessage',
-						description: 'Only audio messages',
-					},
-					{
-						name: 'Contact Messages Only',
-						value: 'contactMessage',
-						description: 'Only contact messages',
-					},
-					{
-						name: 'Document Messages Only',
-						value: 'documentMessage',
-						description: 'Only document messages',
-					},
-					{
-						name: 'Image Messages Only',
-						value: 'imageMessage',
-						description: 'Only image messages',
-					},
-					{
-						name: 'Incoming Messages Only',
-						value: 'incoming',
-						description: 'Only incoming messages',
-					},
-					{
-						name: 'Location Messages Only',
-						value: 'locationMessage',
-						description: 'Only location messages',
-					},
-					{
-						name: 'Outgoing Messages Only',
-						value: 'outgoing',
-						description: 'Only outgoing messages',
-					},
-					{
-						name: 'Poll Messages Only',
-						value: 'pollMessage',
-						description: 'Only poll messages',
-					},
-					{
-						name: 'Text Messages Only',
-						value: 'textMessage',
-						description: 'Only text messages',
-					},
-					{
-						name: 'Video Messages Only',
-						value: 'videoMessage',
-						description: 'Only video messages',
-					},
-				],
-				description: 'Filter by message type',
-			},
-			// פילטר ID צ'אט ספציפי
-			{
-				displayName: 'Specific Chat ID Filter',
-				name: 'specificChatIdFilter',
-				type: 'string',
-				default: '',
-				displayOptions: {
-					show: {
-						resource: [
-							'trigger',
-						],
-						operation: [
-							'webhook',
-						],
-					},
-				},
-				placeholder: '972501234567@c.us',
-				description: 'Trigger only for messages from specific chat ID (optional)',
-			},
-			// פילטר מילות מפתח
-			{
-				displayName: 'Keyword Filter',
-				name: 'keywordFilter',
-				type: 'string',
-				default: '',
-				displayOptions: {
-					show: {
-						resource: [
-							'trigger',
-						],
-						operation: [
-							'webhook',
-						],
-					},
-				},
-				placeholder: 'hello,help,support',
-				description: 'Trigger only if message contains any of these keywords (comma-separated, optional)',
-			},
+			
 		],
 	};
 
@@ -1119,23 +924,15 @@ export class GreenApi implements INodeType {
 		const items = this.getInputData();
 		const returnData: IDataObject[] = [];
 
+		// קבלת האישורים
+		const credentials = await this.getCredentials('greenApi');
+		const instanceId = credentials.instanceId as string;
+		const apiTokenInstance = credentials.apiTokenInstance as string;
+
 		// לולאה על כל פריט שמתקבל כקלט
 		for (let i = 0; i < items.length; i++) {
 			const resource = this.getNodeParameter('resource', i) as string;
 			const operation = this.getNodeParameter('operation', i) as string;
-
-			// אם זה טריגר, אין לנו מה לעשות בexecute
-			if (resource === 'trigger') {
-				returnData.push({
-					message: 'This is a trigger node. Use it at the start of a workflow to listen for webhooks.',
-				});
-				continue;
-			}
-
-			// קבלת האישורים רק אם זה לא טריגר
-			const credentials = await this.getCredentials('greenApi');
-			const instanceId = credentials.instanceId as string;
-			const apiTokenInstance = credentials.apiTokenInstance as string;
 
 			if (resource === 'message') {
 				// הכנת chatId - כבר לא מוסיף באופן אוטומטי @c.us
@@ -1963,42 +1760,5 @@ export class GreenApi implements INodeType {
 		}
 
 		return [this.helpers.returnJsonArray(returnData)];
-	}
-
-	// מתודה להתמודדות עם webhooks
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const resource = this.getNodeParameter('resource') as string;
-		
-		// אם זה לא טריגר, דחה את הבקשה
-		if (resource !== 'trigger') {
-			return {
-				noWebhookResponse: true,
-			};
-		}
-
-		const operation = this.getNodeParameter('operation') as string;
-		
-		if (operation !== 'webhook') {
-			return {
-				noWebhookResponse: true,
-			};
-		}
-
-		// קבלת המידע מה-webhook
-		const body = this.getBodyData();
-		const headers = this.getHeaderData();
-		
-		// החזרת הנתונים לוורקפלוא
-		return {
-			workflowData: [
-				this.helpers.returnJsonArray([
-					{
-						headers,
-						body,
-						...body,
-					},
-				]),
-			],
-		};
 	}
 } 
