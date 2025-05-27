@@ -1,6 +1,6 @@
 {
-  "name": "n8n-nodes-whatsapp-api-green",
-  "version": "0.2.0",
+  "name": "n8n-nodes-whatsapp-green-api",
+  "version": "0.1.7",
   "description": "n8n node to send WhatsApp messages via Green API",
   "keywords": [
     "n8n-community-node-package",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/idobe977/n8n-nodes-whatsapp-api-green.git"
+    "url": "https://github.com/idobe977/n8n-nodes-green-api.git"
   },
   "engines": {
     "node": ">=18.10",
@@ -30,7 +30,8 @@
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
-    "lintfix": "eslint nodes credentials package.json --fix"
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
     "dist"
@@ -45,7 +46,6 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^22.15.21",
     "@types/request": "^2.48.12",
     "@typescript-eslint/parser": "^7.15.0",
     "eslint": "^8.56.0",
@@ -55,8 +55,10 @@
     "prettier": "^3.3.2",
     "typescript": "^5.5.3"
   },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
   "dependencies": {
-    "n8n-workflow": "^1.14.1",
     "request": "^2.88.2"
   }
 }
