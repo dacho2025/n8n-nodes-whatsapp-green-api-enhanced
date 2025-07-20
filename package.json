@@ -1,0 +1,49 @@
+{
+  "name": "n8n-nodes-whatsapp-green-api-enhanced",
+  "version": "1.0.1",
+  "description": "Enhanced n8n community nodes for WhatsApp automation using Green API",
+  "keywords": [
+    "n8n-community-node-package",
+    "whatsapp",
+    "green-api",
+    "webhook",
+    "messaging",
+    "automation"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "dacho2025",
+    "email": "dacho@example.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dacho2025/n8n-nodes-whatsapp-green-api-enhanced.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/GreenApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/GreenApi/GreenApi.node.js",
+      "dist/nodes/GreenApiTrigger/GreenApiTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.0",
+    "n8n-workflow": "*",
+    "typescript": "~4.8.4"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
