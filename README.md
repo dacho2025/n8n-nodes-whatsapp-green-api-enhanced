@@ -1,179 +1,131 @@
-# n8n-nodes-whatsapp-green-api-enhanced
+# Green API Enhanced - WhatsApp Automation Nodes for n8n
 
-[![npm version](https://badge.fury.io/js/n8n-nodes-whatsapp-green-api-enhanced.svg)](https://www.npmjs.com/package/n8n-nodes-whatsapp-green-api-enhanced)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/npm/dm/n8n-nodes-whatsapp-green-api-enhanced.svg)](https://www.npmjs.com/package/n8n-nodes-whatsapp-green-api-enhanced)
+## ⚠️ **IMPORTANT NOTICE - גירסה בעבודה**
 
-Enhanced n8n community nodes for WhatsApp automation using Green API with advanced filtering capabilities.
+**🚧 Version 1.2.0-1.2.1 is currently UNSTABLE and under active development**
 
-## 🌟 Features
+- **Icons may not display correctly**
+- **Nodes may appear scattered (not grouped properly)**  
+- **Some functionality is still being tested**
+- **Not recommended for production use yet**
 
-- **Send Messages**: Text, files, contacts, locations and more
-- **Group Management**: Create, manage and control WhatsApp groups  
-- **Smart Trigger**: Receive webhooks with advanced filtering options
-- **Chat Operations**: History, archiving and management
-- **Hebrew Support**: Full Hebrew language support
-- **AI Agent Ready**: Compatible with n8n AI agents
+**Please be patient while we work on stabilizing the package. A stable version will be released soon.**
 
-## 📦 Installation
+---
 
-### Via n8n Community Nodes (Recommended)
-1. Go to **Settings** → **Community Nodes** in your n8n instance
-2. Click **Install**
-3. Enter: `n8n-nodes-whatsapp-green-api-enhanced`
-4. Click **Install**
+## Description
 
-### Via npm
+Enhanced n8n community nodes for WhatsApp automation using Green API with advanced filtering, file support, and comprehensive event handling.
+
+## Features
+
+- **Enhanced Main Node**: Send messages, manage groups, get chat history, manage contacts
+- **Advanced Trigger**: 27 different Green API events with smart filtering
+- **Media Nodes**: Dedicated nodes for Voice, Document, and Image processing
+- **File Support**: Automatic download and processing of media files
+- **Comprehensive Filtering**: Filter by keywords, chat types, message types, and more
+
+## Installation
+
 ```bash
 npm install n8n-nodes-whatsapp-green-api-enhanced
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1. Setup Green API Account
-1. Create account at [Green API](https://green-api.com/)
-2. Create a new instance
-3. Get your Instance ID and API Token
-4. Scan QR code with your WhatsApp
+1. **Add Green API Credentials**:
+   - Instance ID from Green API dashboard
+   - API Token from Green API dashboard
 
-### 2. Configure Credentials in n8n
-1. Add **Green API** credentials
-2. Enter your Instance ID and API Token
-3. Test the connection
+2. **Use the Nodes**:
+   - **Green API Enhanced**: Main operations node
+   - **Green API Trigger**: Webhook trigger for incoming events
+   - **Green API Get Voice**: Download voice messages
+   - **Green API Get Document**: Download documents
+   - **Green API Get Image**: Download images
 
-### 3. Use the Nodes
-- **Green API**: Send messages, manage groups, get chat history
-- **Green API Trigger**: Receive incoming messages with filtering
+## Available Nodes
 
-## 📚 Available Nodes
+### 1. Green API Enhanced
+Main operations node with support for:
+- **Messages**: Send text, files, polls, locations, contacts
+- **Groups**: Create, manage, add/remove participants
+- **Chats**: Get chat history and information
+- **Contacts**: Retrieve contact lists
 
-### 🔹 Green API (Send Operations)
-Send messages, manage groups, and perform WhatsApp operations.
+### 2. Green API Trigger
+Advanced webhook trigger supporting 27 different events:
+- Message events (text, media, reactions)
+- Group events (join, leave, updates)
+- Presence updates
+- Call events
+- And many more...
 
-**Resources:**
-- **Message**: Send text, files, contacts, locations
-- **Group**: Create and manage groups
-- **Chat**: Get history and manage conversations
+### 3. Media Processing Nodes
+- **Green API Get Voice**: Download and process voice messages
+- **Green API Get Document**: Download documents and files
+- **Green API Get Image**: Download images with caption support
 
-### 🔸 Green API Trigger (Receive Operations)  
-Advanced webhook receiver with filtering capabilities.
+## Configuration
 
-**Filter Options:**
-- Event types (messages, status changes, etc.)
-- Specific chat IDs
-- Message types (text, image, video, etc.)
-- Keywords in message content
+### Credentials Setup
+1. Go to [Green API](https://green-api.com)
+2. Create an instance and get your credentials:
+   - Instance ID
+   - API Token Instance
+3. Add these credentials to your n8n instance
 
-## 💡 Usage Examples
-
-### Send a Simple Message
+### Basic Workflow Example
 ```
-Resource: Message
-Operation: Send
-Chat ID: 972501234567@c.us
-Message: Hello from n8n!
-```
-
-### Smart Message Trigger
-```
-Event Types: message
-Chat Filter: 972501234567@c.us  
-Message Type: Text Messages Only
-Keywords: help, support, order
+Green API Trigger → Green API Get Voice → Process Audio
 ```
 
-### Create WhatsApp Group
-```
-Resource: Group
-Operation: Create Group
-Group Name: Project Team
-Participants: 972501234567@c.us,972501234568@c.us
-```
+## Advanced Features
 
-## 🔧 Chat ID Formats
+### Event Filtering
+The trigger supports advanced filtering options:
+- **Event Types**: Choose from 27 different event types
+- **Chat Filters**: Filter by specific chats or chat types
+- **Keyword Filtering**: Filter messages by keywords
+- **Bot Detection**: Exclude automated messages
+- **File Type Filters**: Process only specific file types
 
-| Type | Format | Example |
-|------|--------|---------|
-| **Private** | `{phone}@c.us` | `972501234567@c.us` |
-| **Group** | `{groupId}@g.us` | `972501234567-1587570015@g.us` |
+### File Handling
+- Automatic file download from WhatsApp
+- Binary data support for n8n workflows
+- Support for images, audio, documents, videos, and stickers
+- Configurable file type filtering
 
-## 📱 Supported Operations
+## Event Types Supported
 
-### Message Operations
-- Send text messages
-- Send files by URL
-- Send contacts  
-- Send locations
-- Get chat history
+- `session.status` - Session status changes
+- `message` - Any incoming message
+- `message.reaction` - Message reactions
+- `message.ack` - Message delivery status
+- `group.join` - Group member additions
+- `group.leave` - Group member removals
+- `presence.update` - User presence changes
+- `call.received` - Incoming calls
+- And 19 more event types...
 
-### Group Operations
-- Create groups
-- Get group information
-- Manage participants
+## Requirements
 
-### Trigger Events
-- Incoming messages
-- Message status updates
-- Session status changes
-- Group updates
+- n8n version 0.198.0 or higher
+- Green API account with active instance
+- Node.js 16.0.0 or higher
 
-## 🚨 Troubleshooting
+## Support
 
-### "Instance not authorized"
-**Solution**: Scan the QR code again in Green API console
+For issues and feature requests, please visit our [GitHub repository](https://github.com/dacho2025/n8n-nodes-whatsapp-green-api-enhanced).
 
-### "Invalid Chat ID"  
-**Solution**: Ensure correct format:
-- Private: `972501234567@c.us`
-- Group: Use full Group ID
+## License
 
-### Messages not received in Trigger
-**Solution**:
-1. Check webhook URL is correct
-2. Verify filter settings
-3. Ensure instance is active
+MIT License - see LICENSE file for details.
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Please feel free to:
-
-1. **Report bugs** - Open an issue
-2. **Suggest features** - Open a feature request  
-3. **Submit code** - Open a pull request
-4. **Improve docs** - Help enhance documentation
-
-### Development Setup
-```bash
-# Clone repository
-git clone https://github.com/dacho2025/n8n-nodes-whatsapp-green-api-enhanced.git
-
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Develop with watch mode
-npm run dev
-```
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
-## 🔗 Links
-
-- [npm Package](https://www.npmjs.com/package/n8n-nodes-whatsapp-green-api-enhanced)
-- [Green API Documentation](https://green-api.com/docs/)
-- [n8n Documentation](https://docs.n8n.io/)
-- [Issues & Support](https://github.com/dacho2025/n8n-nodes-whatsapp-green-api-enhanced/issues)
-
-## 🙏 Acknowledgments
-
-- Built for the Israeli n8n community
-- Powered by [Green API](https://green-api.com/)
-- Made with ❤️ for the n8n ecosystem
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
 
 ---
 
-**If this package helped you, please give it a ⭐ on GitHub!**
+**Note**: This package enhances WhatsApp automation capabilities. Please ensure compliance with WhatsApp's terms of service and applicable privacy laws when using these nodes.
