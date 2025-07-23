@@ -1,0 +1,22 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="30" cy="30" r="28" fill="#25D366" stroke="#128C7E" stroke-width="2"/>
+  
+  <!-- WhatsApp Phone Icon -->
+  <path d="M30 12C20.059 12 12 20.059 12 30c0 3.486 1.001 6.738 2.727 9.493L12 48l8.507-2.727C23.262 46.999 26.514 48 30 48c9.941 0 18-8.059 18-18S39.941 12 30 12z" fill="white" fill-opacity="0.15"/>
+  
+  <!-- Chat Bubble -->
+  <path d="M18 28c0-6.627 5.373-12 12-12s12 5.373 12 12c0 3.314-1.344 6.314-3.515 8.485L42 40l-3.515-3.515C36.314 34.314 33.314 33 30 28z" fill="white"/>
+  
+  <!-- Message Lines -->
+  <line x1="24" y1="26" x2="36" y2="26" stroke="#25D366" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24" y1="30" x2="34" y2="30" stroke="#25D366" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24" y1="34" x2="32" y2="34" stroke="#25D366" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- API Badge -->
+  <circle cx="45" cy="15" r="10" fill="#128C7E"/>
+  <text x="45" y="19" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">API</text>
+  
+  <!-- Green API Text -->
+  <text x="30" y="54" text-anchor="middle" fill="#128C7E" font-family="Arial, sans-serif" font-size="6" font-weight="bold">GREEN API</text>
+</svg>

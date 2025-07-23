@@ -1,17 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GreenApi = void 0;
+// nodes/GreenApi/GreenApi.node.ts
 const n8n_workflow_1 = require("n8n-workflow");
+const MessageOperations_1 = require("./operations/MessageOperations");
+const GroupOperations_1 = require("./operations/GroupOperations");
+const ChatOperations_1 = require("./operations/ChatOperations");
+const ContactOperations_1 = require("./operations/ContactOperations");
+// Import Properties that exist
+const GroupProperties_1 = require("./properties/GroupProperties");
+const ContactProperties_1 = require("./properties/ContactProperties");
 class GreenApi {
     constructor() {
         this.description = {
-            displayName: 'Green API',
+            displayName: 'Green API Enhanced',
             name: 'greenApi',
+            icon: 'file:greenApi.svg',
             group: ['communication'],
             version: 1,
-            description: 'Send WhatsApp messages via Green API',
+            subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+            description: 'Enhanced WhatsApp automation via Green API with advanced features and file support',
             defaults: {
-                name: 'Green API',
+                name: 'Green API Enhanced',
             },
             inputs: ["main" /* NodeConnectionType.Main */],
             outputs: ["main" /* NodeConnectionType.Main */],
@@ -22,6 +32,7 @@ class GreenApi {
                 },
             ],
             properties: [
+                // Main Resource Selection
                 {
                     displayName: 'Resource',
                     name: 'resource',
@@ -31,19 +42,29 @@ class GreenApi {
                         {
                             name: 'Message',
                             value: 'message',
+                            description: 'Send and manage WhatsApp messages',
                         },
                         {
                             name: 'Group',
                             value: 'group',
+                            description: 'Manage WhatsApp groups',
                         },
                         {
                             name: 'Chat',
                             value: 'chat',
+                            description: 'Get chat information and history',
+                        },
+                        {
+                            name: 'Contact',
+                            value: 'contact',
+                            description: 'Manage contacts and get contact lists',
                         },
                     ],
                     default: 'message',
                     required: true,
+                    description: 'The resource to operate on',
                 },
+                // Message Operations
                 {
                     displayName: 'Operation',
                     name: 'operation',
@@ -56,16 +77,34 @@ class GreenApi {
                     },
                     options: [
                         {
-                            name: 'Send',
+                            name: 'Send Text',
                             value: 'send',
                             description: 'Send a text message',
-                            action: 'Send a message',
+                            action: 'Send a text message',
                         },
                         {
-                            name: 'Send File By URL',
+                            name: 'Send File by URL',
                             value: 'sendFileByUrl',
                             description: 'Send a file from a URL',
                             action: 'Send a file from a URL',
+                        },
+                        {
+                            name: 'Send File by Upload',
+                            value: 'sendFileByUpload',
+                            description: 'Send a file by uploading it',
+                            action: 'Send a file by uploading it',
+                        },
+                        {
+                            name: 'Send Poll',
+                            value: 'sendPoll',
+                            description: 'Send a poll message',
+                            action: 'Send a poll message',
+                        },
+                        {
+                            name: 'Send Location',
+                            value: 'sendLocation',
+                            description: 'Send a location message',
+                            action: 'Send a location message',
                         },
                         {
                             name: 'Send Contact',
@@ -74,14 +113,33 @@ class GreenApi {
                             action: 'Send a contact message',
                         },
                         {
-                            name: 'Send Location',
-                            value: 'sendLocation',
-                            description: 'Send a location message',
-                            action: 'Send a location message',
+                            name: 'Forward Messages',
+                            value: 'forwardMessages',
+                            description: 'Forward messages to a chat',
+                            action: 'Forward messages to a chat',
+                        },
+                        {
+                            name: 'Edit Message',
+                            value: 'editMessage',
+                            description: 'Edit a text message',
+                            action: 'Edit a text message',
+                        },
+                        {
+                            name: 'Delete Message',
+                            value: 'deleteMessage',
+                            description: 'Delete a message from chat',
+                            action: 'Delete a message from chat',
+                        },
+                        {
+                            name: 'Upload File',
+                            value: 'uploadFile',
+                            description: 'Upload a file to cloud storage',
+                            action: 'Upload a file to cloud storage',
                         },
                     ],
                     default: 'send',
                 },
+                // Group Operations
                 {
                     displayName: 'Operation',
                     name: 'operation',
@@ -105,9 +163,52 @@ class GreenApi {
                             description: 'Get information about a group',
                             action: 'Get information about a group',
                         },
+                        {
+                            name: 'Update Group Name',
+                            value: 'updateGroupName',
+                            description: 'Update the group name',
+                            action: 'Update the group name',
+                        },
+                        {
+                            name: 'Add Participant',
+                            value: 'addGroupParticipant',
+                            description: 'Add a participant to a group',
+                            action: 'Add a participant to a group',
+                        },
+                        {
+                            name: 'Remove Participant',
+                            value: 'removeGroupParticipant',
+                            description: 'Remove a participant from a group',
+                            action: 'Remove a participant from a group',
+                        },
+                        {
+                            name: 'Set Admin',
+                            value: 'setGroupAdmin',
+                            description: 'Set a participant as a group admin',
+                            action: 'Set a participant as a group admin',
+                        },
+                        {
+                            name: 'Remove Admin',
+                            value: 'removeAdmin',
+                            description: 'Remove admin rights from a participant',
+                            action: 'Remove admin rights from a participant',
+                        },
+                        {
+                            name: 'Set Group Picture',
+                            value: 'setGroupPicture',
+                            description: 'Set a picture for a group',
+                            action: 'Set a picture for a group',
+                        },
+                        {
+                            name: 'Leave Group',
+                            value: 'leaveGroup',
+                            description: 'Leave a group',
+                            action: 'Leave a group',
+                        },
                     ],
                     default: 'createGroup',
                 },
+                // Chat Operations
                 {
                     displayName: 'Operation',
                     name: 'operation',
@@ -128,384 +229,69 @@ class GreenApi {
                     ],
                     default: 'getChatHistory',
                 },
+                // Contact Operations
                 {
-                    displayName: 'Chat ID',
-                    name: 'chatId',
-                    type: 'string',
-                    default: '',
-                    required: true,
+                    displayName: 'Operation',
+                    name: 'operation',
+                    type: 'options',
+                    noDataExpression: true,
                     displayOptions: {
                         show: {
-                            resource: ['message'],
-                            operation: ['send', 'sendFileByUrl', 'sendContact', 'sendLocation'],
+                            resource: ['contact'],
                         },
                     },
-                    placeholder: '972501234567@c.us',
-                    description: 'Chat ID. For private chat use phone@c.us, for group chat use chatId@g.us.',
-                },
-                {
-                    displayName: 'Chat ID',
-                    name: 'chatId',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['chat'],
-                            operation: ['getChatHistory'],
+                    options: [
+                        {
+                            name: 'Get Contacts',
+                            value: 'getContacts',
+                            description: 'Get list of contacts',
+                            action: 'Get list of contacts',
                         },
-                    },
-                    placeholder: '972501234567@c.us',
-                    description: 'Chat ID to get history from',
+                    ],
+                    default: 'getContacts',
                 },
-                {
-                    displayName: 'Message',
-                    name: 'message',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['send'],
-                        },
-                    },
-                    placeholder: 'Enter your message here',
-                    description: 'Text message to send',
-                },
-                {
-                    displayName: 'File URL',
-                    name: 'fileUrl',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendFileByUrl'],
-                        },
-                    },
-                    placeholder: 'https://example.com/image.jpg',
-                    description: 'URL of the file to send',
-                },
-                {
-                    displayName: 'File Name',
-                    name: 'fileName',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendFileByUrl'],
-                        },
-                    },
-                    placeholder: 'image.jpg',
-                    description: 'Name of the file to send',
-                },
-                {
-                    displayName: 'Caption',
-                    name: 'caption',
-                    type: 'string',
-                    default: '',
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendFileByUrl'],
-                        },
-                    },
-                    placeholder: 'Enter caption for the file',
-                    description: 'Caption for the file (optional)',
-                },
-                {
-                    displayName: 'Phone Contact',
-                    name: 'phoneContact',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendContact'],
-                        },
-                    },
-                    placeholder: '79001234567',
-                    description: 'Phone number of the contact in international format (no +)',
-                },
-                {
-                    displayName: 'First Name',
-                    name: 'firstName',
-                    type: 'string',
-                    default: '',
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendContact'],
-                        },
-                    },
-                    placeholder: 'John',
-                    description: 'First name of the contact',
-                },
-                {
-                    displayName: 'Last Name',
-                    name: 'lastName',
-                    type: 'string',
-                    default: '',
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendContact'],
-                        },
-                    },
-                    placeholder: 'Doe',
-                    description: 'Last name of the contact',
-                },
-                {
-                    displayName: 'Latitude',
-                    name: 'latitude',
-                    type: 'number',
-                    default: 0,
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendLocation'],
-                        },
-                    },
-                    placeholder: '32.0853',
-                    description: 'Latitude of the location',
-                },
-                {
-                    displayName: 'Longitude',
-                    name: 'longitude',
-                    type: 'number',
-                    default: 0,
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendLocation'],
-                        },
-                    },
-                    placeholder: '34.7818',
-                    description: 'Longitude of the location',
-                },
-                {
-                    displayName: 'Location Name',
-                    name: 'nameLocation',
-                    type: 'string',
-                    default: '',
-                    displayOptions: {
-                        show: {
-                            resource: ['message'],
-                            operation: ['sendLocation'],
-                        },
-                    },
-                    placeholder: 'Tel Aviv',
-                    description: 'Name of the location',
-                },
-                {
-                    displayName: 'Group Name',
-                    name: 'groupName',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['group'],
-                            operation: ['createGroup'],
-                        },
-                    },
-                    placeholder: 'My New Group',
-                    description: 'Name for the group',
-                },
-                {
-                    displayName: 'Group Participants',
-                    name: 'chatIds',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['group'],
-                            operation: ['createGroup'],
-                        },
-                    },
-                    placeholder: '972501234567@c.us,972501234568@c.us',
-                    description: 'Comma-separated list of chat IDs to add to the group',
-                },
-                {
-                    displayName: 'Group ID',
-                    name: 'groupId',
-                    type: 'string',
-                    default: '',
-                    required: true,
-                    displayOptions: {
-                        show: {
-                            resource: ['group'],
-                            operation: ['getGroupData'],
-                        },
-                    },
-                    placeholder: '972501234567-1587570015@g.us',
-                    description: 'Group ID to get information about',
-                },
-                {
-                    displayName: 'Count',
-                    name: 'count',
-                    type: 'number',
-                    default: 100,
-                    displayOptions: {
-                        show: {
-                            resource: ['chat'],
-                            operation: ['getChatHistory'],
-                        },
-                    },
-                    placeholder: '100',
-                    description: 'Number of messages to get (default: 100)',
-                },
+                // Include Properties that exist
+                ...GroupProperties_1.GroupProperties,
+                ...ContactProperties_1.ContactProperties,
             ],
         };
     }
     async execute() {
         const items = this.getInputData();
         const returnData = [];
+        // Get credentials
         const credentials = await this.getCredentials('greenApi');
         const instanceId = credentials.instanceId;
         const apiTokenInstance = credentials.apiTokenInstance;
+        // Process each input item
         for (let i = 0; i < items.length; i++) {
             const resource = this.getNodeParameter('resource', i);
             const operation = this.getNodeParameter('operation', i);
             try {
                 let responseData;
-                if (resource === 'message') {
-                    if (operation === 'send') {
-                        const chatId = this.getNodeParameter('chatId', i);
-                        const message = this.getNodeParameter('message', i);
-                        const body = {
-                            chatId,
-                            message,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/sendMessage/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
-                    else if (operation === 'sendFileByUrl') {
-                        const chatId = this.getNodeParameter('chatId', i);
-                        const fileUrl = this.getNodeParameter('fileUrl', i);
-                        const fileName = this.getNodeParameter('fileName', i);
-                        const caption = this.getNodeParameter('caption', i, '');
-                        const body = {
-                            chatId,
-                            urlFile: fileUrl,
-                            fileName,
-                            caption,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/sendFileByUrl/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
-                    else if (operation === 'sendContact') {
-                        const chatId = this.getNodeParameter('chatId', i);
-                        const phoneContact = this.getNodeParameter('phoneContact', i);
-                        const firstName = this.getNodeParameter('firstName', i, '');
-                        const lastName = this.getNodeParameter('lastName', i, '');
-                        const contact = {
-                            phoneContact,
-                        };
-                        if (firstName)
-                            contact.firstName = firstName;
-                        if (lastName)
-                            contact.lastName = lastName;
-                        const body = {
-                            chatId,
-                            contact,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/sendContact/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
-                    else if (operation === 'sendLocation') {
-                        const chatId = this.getNodeParameter('chatId', i);
-                        const latitude = this.getNodeParameter('latitude', i);
-                        const longitude = this.getNodeParameter('longitude', i);
-                        const nameLocation = this.getNodeParameter('nameLocation', i, '');
-                        const body = {
-                            chatId,
-                            latitude,
-                            longitude,
-                        };
-                        if (nameLocation)
-                            body.nameLocation = nameLocation;
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/sendLocation/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
+                switch (resource) {
+                    case 'message':
+                        responseData = await MessageOperations_1.MessageOperations.execute(this, i, operation, instanceId, apiTokenInstance);
+                        break;
+                    case 'group':
+                        responseData = await GroupOperations_1.GroupOperations.execute(this, i, operation, instanceId, apiTokenInstance);
+                        break;
+                    case 'chat':
+                        responseData = await ChatOperations_1.ChatOperations.execute(this, i, operation, instanceId, apiTokenInstance);
+                        break;
+                    case 'contact':
+                        responseData = await ContactOperations_1.ContactOperations.execute(this, i, operation, instanceId, apiTokenInstance);
+                        break;
+                    default:
+                        throw new n8n_workflow_1.NodeOperationError(this.getNode(), `Unknown resource: ${resource}`);
                 }
-                else if (resource === 'group') {
-                    if (operation === 'createGroup') {
-                        const groupName = this.getNodeParameter('groupName', i);
-                        const chatIdsStr = this.getNodeParameter('chatIds', i);
-                        const chatIds = chatIdsStr.split(',').map(id => id.trim());
-                        const body = {
-                            groupName,
-                            chatIds,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/createGroup/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
-                    else if (operation === 'getGroupData') {
-                        const groupId = this.getNodeParameter('groupId', i);
-                        const body = {
-                            groupId,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/getGroupData/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
+                // Ensure responseData is an object
+                if (responseData && typeof responseData === 'object') {
+                    returnData.push(responseData);
                 }
-                else if (resource === 'chat') {
-                    if (operation === 'getChatHistory') {
-                        const chatId = this.getNodeParameter('chatId', i);
-                        const count = this.getNodeParameter('count', i);
-                        const body = {
-                            chatId,
-                            count,
-                        };
-                        const options = {
-                            method: 'POST',
-                            uri: `https://api.green-api.com/waInstance${instanceId}/getChatHistory/${apiTokenInstance}`,
-                            body,
-                            json: true,
-                        };
-                        responseData = await this.helpers.request(options);
-                    }
+                else {
+                    returnData.push({ result: responseData });
                 }
-                returnData.push(responseData);
             }
             catch (error) {
                 if (this.continueOnFail()) {
@@ -514,6 +300,7 @@ class GreenApi {
                             error: error.message,
                             resource,
                             operation,
+                            timestamp: new Date().toISOString(),
                         },
                     });
                     continue;

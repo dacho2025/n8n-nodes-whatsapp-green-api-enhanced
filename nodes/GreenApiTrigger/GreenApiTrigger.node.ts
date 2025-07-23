@@ -1,212 +1,308 @@
+// nodes/GreenApiTrigger/GreenApiTrigger.node.ts
 import {
-  IHookFunctions,
-  IWebhookFunctions,
-  INodeType,
-  INodeTypeDescription,
-  IWebhookResponseData,
-  NodeConnectionType,
+	IWebhookFunctions,
+	IDataObject,
+	INodeType,
+	INodeTypeDescription,
+	IWebhookResponseData,
+	NodeApiError,
+	NodeConnectionType,
 } from 'n8n-workflow';
 
+import { TriggerProperties } from './properties/TriggerProperties';
+import { isValidEvent, getWebhookType } from '../../utils/EventTypes';
+
 export class GreenApiTrigger implements INodeType {
-  description: INodeTypeDescription = {
-    displayName: 'Green API Trigger',
-    name: 'greenApiTrigger',
-    group: ['trigger'],
-    version: 1,
-    description: 'Listen for incoming WhatsApp messages via Green API webhooks',
-    defaults: {
-      name: 'Green API Trigger',
-    },
-    inputs: [],
-    outputs: [NodeConnectionType.Main],
-    webhooks: [
-      {
-        name: 'default',
-        httpMethod: 'POST',
-        responseMode: 'onReceived',
-        path: 'green-api',
-      },
-    ],
-    properties: [
-      {
-        displayName: 'Event Types',
-        name: 'events',
-        type: 'multiOptions',
-        options: [
-          { name: 'All Messages', value: 'message' },
-          { name: 'Session Status', value: 'sessionStatus' },
-          { name: 'Message Status', value: 'messageStatus' },
-          { name: 'State Change', value: 'stateChange' },
-        ],
-        default: ['message'],
-        description: 'Select which webhook events to listen for',
-        required: true,
-      },
-      {
-        displayName: 'Filter by Chat',
-        name: 'chatFilter',
-        type: 'string',
-        default: '',
-        placeholder: '972501234567@c.us',
-        description: 'Filter messages by specific chat ID (optional)',
-      },
-      {
-        displayName: 'Filter by Message Type',
-        name: 'messageTypeFilter',
-        type: 'options',
-        options: [
-          { name: 'All', value: '' },
-          { name: 'Text Messages Only', value: 'textMessage' },
-          { name: 'Image Messages Only', value: 'imageMessage' },
-          { name: 'Video Messages Only', value: 'videoMessage' },
-          { name: 'Audio Messages Only', value: 'audioMessage' },
-          { name: 'Document Messages Only', value: 'documentMessage' },
-        ],
-        default: '',
-        description: 'Filter by specific message types',
-      },
-      {
-        displayName: 'Keyword Filter',
-        name: 'keywordFilter',
-        type: 'string',
-        default: '',
-        placeholder: 'help, order, support',
-        description: 'Comma-separated keywords to filter messages (case-insensitive)',
-      },
-    ],
-  };
+	description: INodeTypeDescription = {
+		displayName: 'Green API Trigger',
+		name: 'greenApiTrigger',
+		icon: 'file:greenApi.svg',
+		group: ['trigger'],
+		version: 1,
+		subtitle: '={{$parameter["events"].join(", ")}}',
+		description: 'Enhanced WhatsApp trigger with file support and advanced filtering',
+		defaults: {
+			name: 'Green API Trigger',
+		},
+		inputs: [],
+		outputs: [NodeConnectionType.Main],
+		credentials: [
+			{
+				name: 'greenApi',
+				required: true,
+			},
+		],
+		webhooks: [
+			{
+				name: 'default',
+				httpMethod: 'POST',
+				responseMode: 'onReceived',
+				path: 'webhook',
+			},
+		],
+		properties: TriggerProperties,
+	};
 
-  webhookMethods = {
-    default: {
-      async checkExists(this: IHookFunctions): Promise<boolean> {
-        return true;
-      },
-      async create(this: IHookFunctions): Promise<boolean> {
-        return true;
-      },
-      async delete(this: IHookFunctions): Promise<boolean> {
-        return true;
-      },
-    },
-  };
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+		const headerData = this.getHeaderData() as IDataObject;
+		const bodyData = this.getBodyData() as IDataObject;
+		
+		// Get node parameters
+		const events = this.getNodeParameter('events') as string[];
+		const downloadFiles = this.getNodeParameter('downloadFiles', true) as boolean;
+		const fileTypes = this.getNodeParameter('fileTypes', ['image', 'audio', 'document']) as string[];
+		const chatFilter = this.getNodeParameter('chatFilter', '') as string;
+		const senderFilter = this.getNodeParameter('senderFilter', '') as string;
+		
+		// Advanced options
+		const advancedOptions = this.getNodeParameter('advancedOptions', {}) as IDataObject;
+		const instanceIdFilter = advancedOptions.instanceIdFilter as string || '';
+		const includeQuoted = advancedOptions.includeQuoted as boolean || false;
+		const parseMentions = advancedOptions.parseMentions as boolean || false;
+		const includeRawData = advancedOptions.includeRawData as boolean || false;
+		
+		// Filters
+		const filters = this.getNodeParameter('filters', {}) as IDataObject;
+		const keywords = filters.keywords as string || '';
+		const messageTypes = filters.messageTypes as string[] || [];
+		const chatTypes = filters.chatTypes as string || 'all';
+		const excludeBots = filters.excludeBots as boolean ?? true;
+		const excludeForwarded = filters.excludeForwarded as boolean || false;
+		const minLength = filters.minLength as number || 0;
+		const maxLength = filters.maxLength as number || 0;
 
-  async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-    const body = this.getBodyData();
-    
-    // Get node parameters
-    const events = this.getNodeParameter('events') as string[];
-    const chatFilter = this.getNodeParameter('chatFilter') as string;
-    const messageTypeFilter = this.getNodeParameter('messageTypeFilter') as string;
-    const keywordFilter = this.getNodeParameter('keywordFilter') as string;
+		// Validate webhook data
+		if (!bodyData || !bodyData.typeWebhook) {
+			throw new NodeApiError(this.getNode(), {
+				message: 'Invalid webhook data - missing typeWebhook',
+				description: 'This does not appear to be a valid Green API webhook',
+			});
+		}
 
-    try {
-      if (!body || typeof body !== 'object') {
-        return {
-          webhookResponse: {
-            status: 400,
-            body: 'Invalid webhook payload',
-          },
-        };
-      }
+		const webhookType = bodyData.typeWebhook as string;
+		const messageData = bodyData.messageData as IDataObject;
+		const instanceData = bodyData.instanceData as IDataObject;
 
-      const webhookData = body as any;
-      const webhookType = webhookData.typeWebhook;
-      const messageData = webhookData.messageData;
+		// Filter by events
+		const isEventMatch = events.some(event => {
+			if (!isValidEvent(event)) return false;
+			return getWebhookType(event) === webhookType;
+		});
 
-      // Filter by event type
-      if (!isEventTypeMatch(webhookType, events)) {
-        return {
-          webhookResponse: {
-            status: 200,
-            body: 'Event type filtered - ignored',
-          },
-        };
-      }
+		if (!isEventMatch) {
+			return { noWebhookResponse: true };
+		}
 
-      // Filter by chat ID if specified
-      if (chatFilter && messageData?.chatId !== chatFilter) {
-        return {
-          webhookResponse: {
-            status: 200,
-            body: 'Chat filter - ignored',
-          },
-        };
-      }
+		// Filter by instance ID
+		if (instanceIdFilter && instanceData?.idInstance !== instanceIdFilter) {
+			return { noWebhookResponse: true };
+		}
 
-      // Filter by message type if specified
-      if (messageTypeFilter && !isMessageTypeMatch(messageData, messageTypeFilter)) {
-        return {
-          webhookResponse: {
-            status: 200,
-            body: 'Message type filter - ignored',
-          },
-        };
-      }
+		// Filter by chat ID
+		if (chatFilter && messageData?.chatId !== chatFilter) {
+			return { noWebhookResponse: true };
+		}
 
-      // Filter by keywords if specified
-      if (keywordFilter && !isKeywordMatch(messageData, keywordFilter)) {
-        return {
-          webhookResponse: {
-            status: 200,
-            body: 'Keyword filter - ignored',
-          },
-        };
-      }
+		// Filter by sender
+		if (senderFilter && messageData?.senderId !== senderFilter) {
+			return { noWebhookResponse: true };
+		}
 
-      // Process the webhook data
-      const outputData = {
-        webhook_type: webhookType,
-        timestamp: new Date().toISOString(),
-        message: messageData || null,
-        raw_data: webhookData,
-      };
+		// Filter by chat type
+		if (chatTypes !== 'all' && messageData?.chatId) {
+			const isGroup = (messageData.chatId as string).includes('@g.us');
+			if (chatTypes === 'group' && !isGroup) return { noWebhookResponse: true };
+			if (chatTypes === 'private' && isGroup) return { noWebhookResponse: true };
+		}
 
-      return {
-        workflowData: [this.helpers.returnJsonArray([outputData])],
-        webhookResponse: {
-          status: 200,
-          body: 'OK',
-        },
-      };
+		// Filter by message type
+		if (messageTypes.length > 0 && messageData?.typeMessage) {
+			if (!messageTypes.includes(messageData.typeMessage as string)) {
+				return { noWebhookResponse: true };
+			}
+		}
 
-    } catch (error) {
-      return {
-        webhookResponse: {
-          status: 500,
-          body: `Error processing webhook: ${(error as Error).message}`,
-        },
-      };
-    }
-  }
+		let returnData: IDataObject = {
+			event: webhookType,
+			timestamp: new Date().toISOString(),
+			instanceId: instanceData?.idInstance || null,
+		};
+
+		try {
+			// Process message data if available
+			if (messageData) {
+				// Extract message text inline
+				const messageText = extractMessageText(messageData);
+				
+				// Apply text-based filters
+				if (keywords) {
+					const keywordList = keywords.toLowerCase().split(',').map(k => k.trim());
+					const hasKeyword = keywordList.some(keyword => 
+						messageText.toLowerCase().includes(keyword)
+					);
+					if (!hasKeyword) {
+						return { noWebhookResponse: true };
+					}
+				}
+
+				// Bot filter
+				if (excludeBots && isBotMessage(messageText)) {
+					return { noWebhookResponse: true };
+				}
+
+				// Forwarded filter
+				if (excludeForwarded && messageData.quotedMessage) {
+					return { noWebhookResponse: true };
+				}
+
+				// Length filters
+				if (minLength > 0 && messageText.length < minLength) {
+					return { noWebhookResponse: true };
+				}
+				if (maxLength > 0 && messageText.length > maxLength) {
+					return { noWebhookResponse: true };
+				}
+
+				// Process message
+				const messageDataObj: IDataObject = {
+					messageId: messageData.idMessage,
+					chatId: messageData.chatId,
+					senderId: messageData.senderId,
+					senderName: messageData.senderName,
+					textMessage: messageText,
+					timestamp: messageData.timestamp,
+					type: messageData.typeMessage,
+					isGroup: ((messageData.chatId as string) || '').includes('@g.us'),
+				};
+
+				returnData.messageData = messageDataObj;
+
+				// Process quoted message if requested
+				if (includeQuoted && messageData.quotedMessage) {
+					const quotedMessage = messageData.quotedMessage as IDataObject;
+					(returnData.messageData as IDataObject).quotedMessage = {
+						messageId: quotedMessage.stanzaId,
+						text: quotedMessage.textMessage,
+						type: quotedMessage.typeMessage,
+					};
+				}
+
+				// Parse mentions if requested
+				if (parseMentions) {
+					(returnData.messageData as IDataObject).mentions = extractMentions(messageText);
+				}
+
+				// Add basic file info if available (no download in trigger)
+				if (hasFileMessage(messageData)) {
+					returnData.hasFile = true;
+					returnData.fileType = messageData.typeMessage;
+				}
+			}
+
+			// Add instance data
+			if (instanceData) {
+				returnData.instance = {
+					id: instanceData.idInstance,
+					webhookUrl: instanceData.webhookUrl,
+					senderData: instanceData.senderData,
+				};
+			}
+
+			// Add raw data if requested
+			if (includeRawData) {
+				returnData.rawData = bodyData;
+			}
+
+			// Add headers
+			returnData.headers = headerData;
+
+		} catch (error) {
+			returnData.error = (error as Error).message;
+		}
+
+		return {
+			workflowData: [
+				[
+					{
+						json: returnData,
+					},
+				],
+			],
+		};
+	}
+
 }
 
-function isEventTypeMatch(webhookType: string, allowedEvents: string[]): boolean {
-  const eventMap: { [key: string]: string[] } = {
-    'message': ['incomingMessageReceived', 'outgoingMessageReceived'],
-    'sessionStatus': ['stateInstanceChanged'],
-    'messageStatus': ['outgoingMessageStatus'],
-    'stateChange': ['stateInstanceChanged'],
-  };
+// Helper functions outside the class
+function extractMessageText(messageData: IDataObject): string {
+	// Try different possible text fields
+	const textSources = [
+		messageData.textMessage,
+		messageData.text,
+		messageData.caption,
+	];
 
-  for (const event of allowedEvents) {
-    if (eventMap[event]?.includes(webhookType)) {
-      return true;
-    }
-  }
+	// Check for nested text data
+	const textMessageData = messageData.textMessageData as IDataObject;
+	if (textMessageData) {
+		textSources.unshift(textMessageData.textMessage);
+	}
 
-  return false;
+	// Check for image/video/document caption
+	const imageData = messageData.imageMessageData as IDataObject;
+	if (imageData?.caption) {
+		textSources.unshift(imageData.caption);
+	}
+
+	const videoData = messageData.videoMessageData as IDataObject;
+	if (videoData?.caption) {
+		textSources.unshift(videoData.caption);
+	}
+
+	const documentData = messageData.documentMessageData as IDataObject;
+	if (documentData?.caption) {
+		textSources.unshift(documentData.caption);
+	}
+
+	// Return first non-empty text found
+	for (const source of textSources) {
+		if (source && typeof source === 'string' && source.trim()) {
+			return source.trim();
+		}
+	}
+
+	return '';
 }
 
-function isMessageTypeMatch(messageData: any, messageType: string): boolean {
-  if (!messageData || !messageType) return true;
-  return messageData.typeMessage === messageType;
+function isBotMessage(messageText: string): boolean {
+	const botIndicators = [
+		'bot', 'automated', 'auto-reply', 'automatic', 
+		'אוטומטי', 'בוט', 'רובוט', 'אוטומטית'
+	];
+	const lowerText = messageText.toLowerCase();
+	return botIndicators.some(indicator => lowerText.includes(indicator));
 }
 
-function isKeywordMatch(messageData: any, keywords: string): boolean {
-  if (!messageData || !keywords) return true;
+function extractMentions(messageText: string): string[] {
+	const mentionRegex = /@(\w+)/g;
+	const mentions: string[] = [];
+	let match;
+	
+	while ((match = mentionRegex.exec(messageText)) !== null) {
+		mentions.push(match[1]);
+	}
+	
+	return mentions;
+}
 
-  const messageText = messageData.textMessageData?.textMessage?.toLowerCase() || '';
-  const keywordList = keywords.toLowerCase().split(',').map(k => k.trim());
-
-  return keywordList.some(keyword => messageText.includes(keyword));
+function hasFileMessage(messageData: IDataObject): boolean {
+	const fileTypes = [
+		'imageMessage',
+		'audioMessage', 
+		'videoMessage',
+		'documentMessage',
+		'voiceMessage',
+		'stickerMessage'
+	];
+	return fileTypes.includes(messageData.typeMessage as string);
 }
