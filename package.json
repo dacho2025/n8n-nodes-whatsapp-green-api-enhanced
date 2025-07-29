@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-whatsapp-green-api-enhanced",
-  "version": "1.2.2",
+  "version": "1.2.8",
   "description": "Enhanced n8n community nodes for WhatsApp automation using Green API with advanced filtering, file support, comprehensive event handling, and dedicated media processing nodes",
   "keywords": [
     "n8n-community-node-package",
