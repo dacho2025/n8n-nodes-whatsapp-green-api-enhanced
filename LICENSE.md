@@ -1,3 +1,5 @@
+# MIT License
+
 Copyright 2024 BWays Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of

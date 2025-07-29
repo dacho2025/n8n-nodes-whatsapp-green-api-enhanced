@@ -46,8 +46,8 @@ export class GreenApiGetVideo implements INodeType {
 		defaults: {
 			name: 'Green API Get Video',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		credentials: [
 			{
 				name: 'greenApi',
