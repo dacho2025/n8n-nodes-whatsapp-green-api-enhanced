@@ -39,8 +39,8 @@
     "build:icons": "gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials utils --write",
-    "lint": "eslint dist/nodes dist/credentials dist/utils package.json",
-    "lintfix": "eslint dist/nodes dist/credentials dist/utils package.json --fix",
+    "lint": "eslint nodes credentials utils --ext .ts",
+    "lintfix": "eslint nodes credentials utils --ext .ts --fix",
     "prepublishOnly": "npm run build"
   },
   "files": [
