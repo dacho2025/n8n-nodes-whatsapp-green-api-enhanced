@@ -299,7 +299,11 @@ export class GreenApiTrigger implements INodeType {
 		const filters = this.getNodeParameter('filters', {}) as any;
 		const options = this.getNodeParameter('options', {}) as any;
 
+		// Debug logging
+		console.log('Webhook received:', JSON.stringify(bodyData, null, 2));
+
 		if (!bodyData || typeof bodyData !== 'object') {
+			console.log('Invalid body data');
 			return {
 				noWebhookResponse: true,
 			};
@@ -308,11 +312,15 @@ export class GreenApiTrigger implements INodeType {
 		const webhookData = bodyData as any;
 
 		// Extract event type and data
-		const eventType = webhookData.typeWebhook;
-		let messageData = webhookData.messageData || webhookData;
+		const eventType = webhookData.typeWebhook || webhookData.type;
+		let messageData = webhookData.messageData || webhookData.data || webhookData;
+
+		console.log('Event type:', eventType);
+		console.log('Message data:', JSON.stringify(messageData, null, 2));
 
 		// Check if this event should trigger
 		if (!events.includes(eventType)) {
+			console.log('Event type not in selected events:', eventType);
 			return {
 				noWebhookResponse: true,
 			};
