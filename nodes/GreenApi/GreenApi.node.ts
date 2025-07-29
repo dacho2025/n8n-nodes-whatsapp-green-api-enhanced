@@ -6,6 +6,7 @@ import {
 	INodeTypeDescription,
 	JsonObject,
 	NodeOperationError,
+	NodeConnectionType,
 } from 'n8n-workflow';
 
 // הוספת הרחבה לממשק INodeTypeDescription
@@ -28,8 +29,8 @@ export class GreenApi implements INodeType {
 		defaults: {
 			name: 'Green API',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		usableAsTool: true,
 		credentials: [
 			{
@@ -1761,4 +1762,4 @@ export class GreenApi implements INodeType {
 
 		return [this.helpers.returnJsonArray(returnData)];
 	}
-} 
+}
