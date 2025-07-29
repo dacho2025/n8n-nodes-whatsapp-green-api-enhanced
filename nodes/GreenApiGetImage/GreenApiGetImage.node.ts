@@ -45,8 +45,8 @@ export class GreenApiGetImage implements INodeType {
 		defaults: {
 			name: 'Green API Get Image',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'greenApi',

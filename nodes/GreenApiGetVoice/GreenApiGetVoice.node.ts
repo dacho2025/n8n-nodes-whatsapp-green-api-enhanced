@@ -29,8 +29,8 @@ export class GreenApiGetVoice implements INodeType {
 		defaults: {
 			name: 'Green API Get Voice',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'greenApi',
