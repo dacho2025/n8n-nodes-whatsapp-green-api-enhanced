@@ -13,7 +13,6 @@ class GreenApiTrigger {
             icon: 'file:greenApi.svg',
             group: ['trigger'],
             version: 1,
-            subtitle: '={{$parameter["events"].join(", ")}}',
             description: 'Enhanced WhatsApp trigger with file support and advanced filtering',
             defaults: {
                 name: 'Green API Trigger',
