@@ -41,9 +41,94 @@ export class GreenApiTrigger implements INodeType {
 				type: 'multiOptions',
 				options: [
 					{
+						name: 'Audio Message',
+						value: 'audioMessage',
+						description: 'Audio/voice messages',
+					},
+					{
+						name: 'Avatar Info',
+						value: 'avatarInfo',
+						description: 'Avatar information update',
+					},
+					{
+						name: 'Chat History',
+						value: 'chatHistory',
+						description: 'Chat history event',
+					},
+					{
+						name: 'Contact Message',
+						value: 'contactMessage',
+						description: 'Contact sharing messages',
+					},
+					{
+						name: 'Contacts',
+						value: 'contacts',
+						description: 'Contacts update',
+					},
+					{
+						name: 'Device Info',
+						value: 'deviceInfo',
+						description: 'Device information update',
+					},
+					{
+						name: 'Document Message',
+						value: 'documentMessage',
+						description: 'Document/file messages',
+					},
+					{
+						name: 'File Message',
+						value: 'fileMessage',
+						description: 'Generic file messages',
+					},
+					{
+						name: 'Group Created',
+						value: 'groupCreated',
+						description: 'New group created',
+					},
+					{
+						name: 'Group Left',
+						value: 'groupLeft',
+						description: 'Left a group',
+					},
+					{
+						name: 'Group Participants Changed',
+						value: 'groupParticipantsChanged',
+						description: 'Group participants updated',
+					},
+					{
+						name: 'Group Updated',
+						value: 'groupUpdated',
+						description: 'Group information updated',
+					},
+					{
+						name: 'Image Message',
+						value: 'imageMessage',
+						description: 'Image/photo messages',
+					},
+					{
+						name: 'Incoming Call',
+						value: 'incomingCall',
+						description: 'Incoming voice/video call',
+					},
+					{
 						name: 'Incoming Message',
 						value: 'incomingMessageReceived',
 						description: 'Triggered when a message is received',
+					},
+					{
+						name: 'Location Message',
+						value: 'locationMessage',
+						description: 'Location sharing messages',
+					},
+					{
+						name: 'Message Deleted',
+						value: 'messageDeleted',
+						description: 'Message was deleted',
+					},
+					{
+						name: 'Outgoing Call',
+						value: 'outgoingCall',
+						description: 'Outgoing voice/video call',
 					},
 					{
 						name: 'Outgoing Message Received',
@@ -56,6 +141,21 @@ export class GreenApiTrigger implements INodeType {
 						description: 'Status update for outgoing messages',
 					},
 					{
+						name: 'Poll Message',
+						value: 'pollMessage',
+						description: 'Poll/vote messages',
+					},
+					{
+						name: 'Presence Update',
+						value: 'presenceUpdate',
+						description: 'Presence status update',
+					},
+					{
+						name: 'Quotas Info',
+						value: 'quotasInfo',
+						description: 'Quota information update',
+					},
+					{
 						name: 'State Instance Changed',
 						value: 'stateInstanceChanged',
 						description: 'Instance state has changed',
@@ -66,114 +166,14 @@ export class GreenApiTrigger implements INodeType {
 						description: 'Instance status has changed',
 					},
 					{
-						name: 'Device Info',
-						value: 'deviceInfo',
-						description: 'Device information update',
-					},
-					{
-						name: 'Incoming Call',
-						value: 'incomingCall',
-						description: 'Incoming voice/video call',
-					},
-					{
-						name: 'Outgoing Call',
-						value: 'outgoingCall',
-						description: 'Outgoing voice/video call',
-					},
-					{
-						name: 'Avatar Info',
-						value: 'avatarInfo',
-						description: 'Avatar information update',
-					},
-					{
-						name: 'Contacts',
-						value: 'contacts',
-						description: 'Contacts update',
-					},
-					{
-						name: 'Chat History',
-						value: 'chatHistory',
-						description: 'Chat history event',
-					},
-					{
-						name: 'Presence Update',
-						value: 'presenceUpdate',
-						description: 'Contact presence status update',
-					},
-					{
-						name: 'Group Participants Changed',
-						value: 'groupParticipantsChanged',
-						description: 'Group participants were added/removed',
-					},
-					{
-						name: 'Group Created',
-						value: 'groupCreated',
-						description: 'New group was created',
-					},
-					{
-						name: 'Group Updated',
-						value: 'groupUpdated',
-						description: 'Group information was updated',
-					},
-					{
-						name: 'Group Left',
-						value: 'groupLeft',
-						description: 'Left a group',
-					},
-					{
-						name: 'Quotas Info',
-						value: 'quotasInfo',
-						description: 'Account quotas information',
-					},
-					{
-						name: 'Message Deleted',
-						value: 'messageDeleted',
-						description: 'Message was deleted',
-					},
-					{
-						name: 'File Message',
-						value: 'fileMessage',
-						description: 'File message received',
-					},
-					{
-						name: 'Audio Message',
-						value: 'audioMessage',
-						description: 'Audio message received',
+						name: 'Sticker Message',
+						value: 'stickerMessage',
+						description: 'Sticker messages',
 					},
 					{
 						name: 'Video Message',
 						value: 'videoMessage',
-						description: 'Video message received',
-					},
-					{
-						name: 'Image Message',
-						value: 'imageMessage',
-						description: 'Image message received',
-					},
-					{
-						name: 'Document Message',
-						value: 'documentMessage',
-						description: 'Document message received',
-					},
-					{
-						name: 'Sticker Message',
-						value: 'stickerMessage',
-						description: 'Sticker message received',
-					},
-					{
-						name: 'Location Message',
-						value: 'locationMessage',
-						description: 'Location message received',
-					},
-					{
-						name: 'Contact Message',
-						value: 'contactMessage',
-						description: 'Contact message received',
-					},
-					{
-						name: 'Poll Message',
-						value: 'pollMessage',
-						description: 'Poll message received',
+						description: 'Video messages',
 					},
 				],
 				default: ['incomingMessageReceived'],
@@ -187,47 +187,47 @@ export class GreenApiTrigger implements INodeType {
 				default: {},
 				options: [
 					{
-						displayName: 'Keywords',
-						name: 'keywords',
-						type: 'string',
-						default: '',
-						placeholder: 'hello, hi, start',
-						description: 'Comma-separated keywords to filter messages (case-insensitive)',
-					},
-					{
 						displayName: 'Chat Type',
 						name: 'chatType',
 						type: 'options',
 						options: [
 							{
-								name: 'All',
+								name: 'All Chats',
 								value: 'all',
 							},
 							{
-								name: 'Private Chat',
-								value: 'private',
+								name: 'Group Chats Only',
+								value: 'group',
 							},
 							{
-								name: 'Group Chat',
-								value: 'group',
+								name: 'Private Chats Only',
+								value: 'private',
 							},
 						],
 						default: 'all',
 						description: 'Filter by chat type',
 					},
 					{
-						displayName: 'Minimum Message Length',
-						name: 'minLength',
-						type: 'number',
-						default: 0,
-						description: 'Minimum length of message text to trigger',
+						displayName: 'Keywords',
+						name: 'keywords',
+						type: 'string',
+						default: '',
+						placeholder: 'help,support,urgent',
+						description: 'Comma-separated keywords to filter messages',
 					},
 					{
 						displayName: 'Maximum Message Length',
-						name: 'maxLength',
+						name: 'maxMessageLength',
 						type: 'number',
 						default: 0,
-						description: 'Maximum length of message text to trigger (0 = no limit)',
+						description: 'Maximum message length in characters (0 = no limit)',
+					},
+					{
+						displayName: 'Minimum Message Length',
+						name: 'minMessageLength',
+						type: 'number',
+						default: 0,
+						description: 'Minimum message length in characters (0 = no limit)',
 					},
 					{
 						displayName: 'Sender Filter',
@@ -235,7 +235,7 @@ export class GreenApiTrigger implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: '972501234567@c.us',
-						description: 'Only trigger for messages from specific sender (Chat ID)',
+						description: 'Filter messages from specific sender (leave empty for all)',
 					},
 				],
 			},
@@ -247,25 +247,18 @@ export class GreenApiTrigger implements INodeType {
 				default: {},
 				options: [
 					{
-						displayName: 'Include Raw Data',
-						name: 'includeRawData',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to include the raw webhook data in the output',
-					},
-					{
-						displayName: 'Auto-detect Media Type',
-						name: 'autoDetectMedia',
+						displayName: 'Include Message Data',
+						name: 'includeMessageData',
 						type: 'boolean',
 						default: true,
-						description: 'Automatically detect and classify media message types',
+						description: 'Whether to include full message data in the output',
 					},
 					{
-						displayName: 'Extract Metadata',
-						name: 'extractMetadata',
+						displayName: 'Include Metadata',
+						name: 'includeMetadata',
 						type: 'boolean',
 						default: true,
-						description: 'Extract additional metadata from messages',
+						description: 'Whether to include metadata in the output',
 					},
 				],
 			},
@@ -299,11 +292,11 @@ export class GreenApiTrigger implements INodeType {
 		}
 
 		const webhookData = bodyData as any;
-		
+
 		// Extract event type and data
 		const eventType = webhookData.typeWebhook;
 		let messageData = webhookData.messageData || webhookData;
-		
+
 		// Check if this event should trigger
 		if (!events.includes(eventType)) {
 			return {
@@ -347,10 +340,10 @@ export class GreenApiTrigger implements INodeType {
 			}
 
 			// Message length filters
-			if (filters.minLength && messageText.length < filters.minLength) {
+			if (filters.minMessageLength && messageText.length < filters.minMessageLength) {
 				return { noWebhookResponse: true };
 			}
-			if (filters.maxLength && filters.maxLength > 0 && messageText.length > filters.maxLength) {
+			if (filters.maxMessageLength && filters.maxMessageLength > 0 && messageText.length > filters.maxMessageLength) {
 				return { noWebhookResponse: true };
 			}
 		}
@@ -388,7 +381,7 @@ export class GreenApiTrigger implements INodeType {
 		}
 
 		// Extract metadata if enabled
-		if (options.extractMetadata) {
+		if (options.includeMetadata) {
 			responseData.metadata = {
 				isFromMe: messageData.isFromMe || false,
 				chatName: messageData.chatName,

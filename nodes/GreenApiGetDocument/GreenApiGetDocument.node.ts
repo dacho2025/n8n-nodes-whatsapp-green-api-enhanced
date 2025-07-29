@@ -8,6 +8,40 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 
+// Helper function to get nested values from objects
+function getNestedValue(obj: any, path: string): any {
+	if (!path.includes('.')) {
+		return obj[path];
+	}
+	return path.split('.').reduce((current, key) => {
+		return current && typeof current === 'object' ? current[key] : undefined;
+	}, obj);
+}
+
+// Helper function to determine document type based on extension and MIME type
+function getDocumentType(fileExtension: string, mimeType: string): string {
+	const typeMap: { [key: string]: string } = {
+		pdf: 'PDF Document',
+		doc: 'Word Document',
+		docx: 'Word Document',
+		xls: 'Excel Spreadsheet',
+		xlsx: 'Excel Spreadsheet',
+		ppt: 'PowerPoint Presentation',
+		pptx: 'PowerPoint Presentation',
+		txt: 'Text File',
+		csv: 'CSV File',
+		zip: 'Archive File',
+		rar: 'Archive File',
+		'7z': 'Archive File',
+		jpg: 'Image File',
+		jpeg: 'Image File',
+		png: 'Image File',
+		gif: 'Image File',
+	};
+
+	return typeMap[fileExtension] || 'Unknown Document';
+}
+
 export class GreenApiGetDocument implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Green API Get Document',
@@ -147,7 +181,7 @@ export class GreenApiGetDocument implements INodeType {
 						name: 'includeMetadata',
 						type: 'boolean',
 						default: true,
-						description: 'Include document metadata in the output',
+						description: 'Whether to include document metadata in the output',
 					},
 					{
 						displayName: 'Custom Filename',
@@ -155,7 +189,7 @@ export class GreenApiGetDocument implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'document_{timestamp}',
-						description: 'Custom filename for the downloaded document. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders',
+						description: 'Custom filename for the downloaded document. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders.',
 					},
 					{
 						displayName: 'File Type Filter',
@@ -163,16 +197,24 @@ export class GreenApiGetDocument implements INodeType {
 						type: 'multiOptions',
 						options: [
 							{
-								name: 'PDF',
-								value: 'pdf',
-							},
-							{
-								name: 'Word Documents',
-								value: 'doc',
+								name: 'Archive Files',
+								value: 'archive',
 							},
 							{
 								name: 'Excel Files',
 								value: 'excel',
+							},
+							{
+								name: 'Images',
+								value: 'image',
+							},
+							{
+								name: 'Other',
+								value: 'other',
+							},
+							{
+								name: 'PDF',
+								value: 'pdf',
 							},
 							{
 								name: 'PowerPoint',
@@ -183,16 +225,8 @@ export class GreenApiGetDocument implements INodeType {
 								value: 'text',
 							},
 							{
-								name: 'Images',
-								value: 'image',
-							},
-							{
-								name: 'Archive Files',
-								value: 'archive',
-							},
-							{
-								name: 'Other',
-								value: 'other',
+								name: 'Word Documents',
+								value: 'doc',
 							},
 						],
 						default: [],
@@ -239,10 +273,10 @@ export class GreenApiGetDocument implements INodeType {
 					const chatIdField = this.getNodeParameter('chatIdField', i) as string;
 					const downloadUrlField = this.getNodeParameter('downloadUrlField', i) as string;
 
-					// Using the class method for accessing nested values
-					messageId = this.getNestedValue(items[i].json, messageIdField);
-					chatId = this.getNestedValue(items[i].json, chatIdField);
-					downloadUrl = this.getNestedValue(items[i].json, downloadUrlField);
+					// Using the helper function for accessing nested values
+					messageId = getNestedValue(items[i].json, messageIdField);
+					chatId = getNestedValue(items[i].json, chatIdField);
+					downloadUrl = getNestedValue(items[i].json, downloadUrlField);
 				}
 
 				let documentData: Buffer;
@@ -260,7 +294,7 @@ export class GreenApiGetDocument implements INodeType {
 					});
 
 					documentData = Buffer.from(response.body);
-					
+
 					// Extract filename from URL or headers
 					const contentDisposition = response.headers['content-disposition'];
 					if (contentDisposition) {
@@ -387,7 +421,7 @@ export class GreenApiGetDocument implements INodeType {
 						.replace('{messageId}', messageId)
 						.replace('{chatId}', chatId)
 						.replace('{originalName}', originalName);
-					
+
 					// Add extension if missing
 					if (!fileName.includes('.') && extension) {
 						fileName += `.${extension}`;
@@ -397,7 +431,7 @@ export class GreenApiGetDocument implements INodeType {
 				// Detect document type
 				const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
 				// Use the helper method to determine document type
-				metadata.documentType = this.getDocumentType(fileExtension, mimeType);
+				metadata.documentType = getDocumentType(fileExtension, mimeType);
 
 				// Prepare binary data
 				const binaryData: IBinaryKeyData = {
@@ -448,37 +482,5 @@ export class GreenApiGetDocument implements INodeType {
 		return [returnData];
 	}
 
-	// Helper method to get nested values from objects
-	private getNestedValue(obj: any, path: string): any {
-		if (!path.includes('.')) {
-			return obj[path];
-		}
-		return path.split('.').reduce((current, key) => {
-			return current && typeof current === 'object' ? current[key] : undefined;
-		}, obj);
-	}
 
-	// Helper method to determine document type based on extension and MIME type
-	private getDocumentType(fileExtension: string, mimeType: string): string {
-		const typeMap: { [key: string]: string } = {
-			pdf: 'PDF Document',
-			doc: 'Word Document',
-			docx: 'Word Document',
-			xls: 'Excel Spreadsheet',
-			xlsx: 'Excel Spreadsheet',
-			ppt: 'PowerPoint Presentation',
-			pptx: 'PowerPoint Presentation',
-			txt: 'Text File',
-			csv: 'CSV File',
-			zip: 'Archive File',
-			rar: 'Archive File',
-			'7z': 'Archive File',
-			jpg: 'Image File',
-			jpeg: 'Image File',
-			png: 'Image File',
-			gif: 'Image File',
-		};
-
-		return typeMap[fileExtension] || 'Unknown Document';
-	}
 }

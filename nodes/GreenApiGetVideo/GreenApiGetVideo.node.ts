@@ -8,6 +8,33 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 
+// Helper function to get nested values from objects
+function getNestedValue(obj: any, path: string): any {
+	if (!path.includes('.')) {
+		return obj[path];
+	}
+	return path.split('.').reduce((current, key) => {
+		return current && typeof current === 'object' ? current[key] : undefined;
+	}, obj);
+}
+
+// Helper function to determine video type based on filename
+function getVideoType(fileName: string): string {
+	const extension = fileName.split('.').pop()?.toLowerCase();
+	const typeMap: { [key: string]: string } = {
+		mp4: 'MP4 Video',
+		avi: 'AVI Video',
+		mov: 'QuickTime Video',
+		wmv: 'Windows Media Video',
+		flv: 'Flash Video',
+		webm: 'WebM Video',
+		mkv: 'Matroska Video',
+		m4v: 'iTunes Video',
+		'3gp': '3GP Video',
+	};
+	return typeMap[extension || ''] || 'Unknown Video Format';
+}
+
 export class GreenApiGetVideo implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Green API Get Video',
@@ -147,7 +174,7 @@ export class GreenApiGetVideo implements INodeType {
 						name: 'includeMetadata',
 						type: 'boolean',
 						default: true,
-						description: 'Include video metadata in the output',
+						description: 'Whether to include video metadata in the output',
 					},
 					{
 						displayName: 'Custom Filename',
@@ -155,7 +182,7 @@ export class GreenApiGetVideo implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'video_{timestamp}',
-						description: 'Custom filename for the downloaded video. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders',
+						description: 'Custom filename for the downloaded video. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders.',
 					},
 					{
 						displayName: 'Video Format Filter',
@@ -163,32 +190,32 @@ export class GreenApiGetVideo implements INodeType {
 						type: 'multiOptions',
 						options: [
 							{
-								name: 'MP4',
-								value: 'mp4',
-							},
-							{
 								name: 'AVI',
 								value: 'avi',
-							},
-							{
-								name: 'MOV',
-								value: 'mov',
-							},
-							{
-								name: 'WMV',
-								value: 'wmv',
 							},
 							{
 								name: 'FLV',
 								value: 'flv',
 							},
 							{
+								name: 'MKV',
+								value: 'mkv',
+							},
+							{
+								name: 'MOV',
+								value: 'mov',
+							},
+							{
+								name: 'MP4',
+								value: 'mp4',
+							},
+							{
 								name: 'WebM',
 								value: 'webm',
 							},
 							{
-								name: 'MKV',
-								value: 'mkv',
+								name: 'WMV',
+								value: 'wmv',
 							},
 						],
 						default: [],
@@ -236,9 +263,9 @@ export class GreenApiGetVideo implements INodeType {
 					const downloadUrlField = this.getNodeParameter('downloadUrlField', i) as string;
 
 					// Using the class method for accessing nested values
-					messageId = this.getNestedValue(items[i].json, messageIdField);
-					chatId = this.getNestedValue(items[i].json, chatIdField);
-					downloadUrl = this.getNestedValue(items[i].json, downloadUrlField);
+					messageId = getNestedValue(items[i].json, messageIdField);
+					chatId = getNestedValue(items[i].json, chatIdField);
+					downloadUrl = getNestedValue(items[i].json, downloadUrlField);
 				}
 
 				let videoData: Buffer;
@@ -257,7 +284,7 @@ export class GreenApiGetVideo implements INodeType {
 					});
 
 					videoData = Buffer.from(response.body);
-					
+
 					// Extract filename from URL or headers
 					const contentDisposition = response.headers['content-disposition'];
 					if (contentDisposition) {
@@ -360,7 +387,7 @@ export class GreenApiGetVideo implements INodeType {
 						.replace('{messageId}', messageId)
 						.replace('{chatId}', chatId)
 						.replace('{originalName}', originalName);
-					
+
 					// Add extension if missing
 					if (!fileName.includes('.') && extension) {
 						fileName += `.${extension}`;
@@ -369,7 +396,7 @@ export class GreenApiGetVideo implements INodeType {
 
 				// Get video type
 				// Use the helper method to determine video type
-				const videoType = this.getVideoType(fileName);
+				const videoType = getVideoType(fileName);
 				metadata.videoType = videoType;
 
 				// Prepare binary data
@@ -423,32 +450,5 @@ export class GreenApiGetVideo implements INodeType {
 		}
 
 		return [returnData];
-	}
-
-	// Helper method to get nested values from objects
-	private getNestedValue(obj: any, path: string): any {
-		if (!path.includes('.')) {
-			return obj[path];
-		}
-		return path.split('.').reduce((current, key) => {
-			return current && typeof current === 'object' ? current[key] : undefined;
-		}, obj);
-	}
-
-	// Helper method to determine video type based on filename
-	private getVideoType(fileName: string): string {
-		const extension = fileName.split('.').pop()?.toLowerCase();
-		const typeMap: { [key: string]: string } = {
-			mp4: 'MP4 Video',
-			avi: 'AVI Video',
-			mov: 'QuickTime Video',
-			wmv: 'Windows Media Video',
-			flv: 'Flash Video',
-			webm: 'WebM Video',
-			mkv: 'Matroska Video',
-			m4v: 'iTunes Video',
-			'3gp': '3GP Video',
-		};
-		return typeMap[extension || ''] || 'Unknown Video Format';
 	}
 }

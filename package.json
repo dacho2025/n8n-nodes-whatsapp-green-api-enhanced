@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-whatsapp-green-api-enhanced",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "Enhanced WhatsApp integration for n8n with Green API - complete media handling and trigger system",
   "keywords": [
     "n8n-community-node-package",
@@ -14,8 +14,8 @@
   "license": "MIT",
   "homepage": "https://github.com/dacho2025/n8n-nodes-whatsapp-green-api-enhanced",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "BWays Team",
+    "email": "support@bways.co.il"
   },
   "repository": {
     "type": "git",
@@ -31,10 +31,13 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint"
+    "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE.md",
+    "README.md",
+    "index.js"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

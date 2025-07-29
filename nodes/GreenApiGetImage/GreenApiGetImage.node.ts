@@ -8,6 +8,32 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 
+// Helper function to get nested values from objects
+function getNestedValue(obj: any, path: string): any {
+	if (!path.includes('.')) {
+		return obj[path];
+	}
+	return path.split('.').reduce((current, key) => {
+		return current && typeof current === 'object' ? current[key] : undefined;
+	}, obj);
+}
+
+// Helper function to determine image type based on filename
+function getImageType(fileName: string): string {
+	const extension = fileName.split('.').pop()?.toLowerCase();
+	const typeMap: { [key: string]: string } = {
+		jpg: 'JPEG Image',
+		jpeg: 'JPEG Image',
+		png: 'PNG Image',
+		gif: 'GIF Image',
+		webp: 'WebP Image',
+		bmp: 'BMP Image',
+		tiff: 'TIFF Image',
+		tif: 'TIFF Image',
+	};
+	return typeMap[extension || ''] || 'Unknown Image Format';
+}
+
 export class GreenApiGetImage implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Green API Get Image',
@@ -147,7 +173,7 @@ export class GreenApiGetImage implements INodeType {
 						name: 'includeMetadata',
 						type: 'boolean',
 						default: true,
-						description: 'Include image metadata in the output',
+						description: 'Whether to include image metadata in the output',
 					},
 					{
 						displayName: 'Custom Filename',
@@ -155,13 +181,21 @@ export class GreenApiGetImage implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'image_{timestamp}',
-						description: 'Custom filename for the downloaded image. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders',
+						description: 'Custom filename for the downloaded image. Use {timestamp}, {messageId}, {chatId}, {originalName} as placeholders.',
 					},
 					{
 						displayName: 'Image Format Filter',
 						name: 'formatFilter',
 						type: 'multiOptions',
 						options: [
+							{
+								name: 'BMP',
+								value: 'bmp',
+							},
+							{
+								name: 'GIF',
+								value: 'gif',
+							},
 							{
 								name: 'JPEG',
 								value: 'jpeg',
@@ -171,20 +205,12 @@ export class GreenApiGetImage implements INodeType {
 								value: 'png',
 							},
 							{
-								name: 'GIF',
-								value: 'gif',
+								name: 'TIFF',
+								value: 'tiff',
 							},
 							{
 								name: 'WebP',
 								value: 'webp',
-							},
-							{
-								name: 'BMP',
-								value: 'bmp',
-							},
-							{
-								name: 'TIFF',
-								value: 'tiff',
 							},
 						],
 						default: [],
@@ -231,10 +257,10 @@ export class GreenApiGetImage implements INodeType {
 					const chatIdField = this.getNodeParameter('chatIdField', i) as string;
 					const downloadUrlField = this.getNodeParameter('downloadUrlField', i) as string;
 
-					// Using the class method for accessing nested values
-					messageId = this.getNestedValue(items[i].json, messageIdField);
-					chatId = this.getNestedValue(items[i].json, chatIdField);
-					downloadUrl = this.getNestedValue(items[i].json, downloadUrlField);
+					// Using the helper function for accessing nested values
+					messageId = getNestedValue(items[i].json, messageIdField);
+					chatId = getNestedValue(items[i].json, chatIdField);
+					downloadUrl = getNestedValue(items[i].json, downloadUrlField);
 				}
 
 				let imageData: Buffer;
@@ -253,7 +279,7 @@ export class GreenApiGetImage implements INodeType {
 					});
 
 					imageData = Buffer.from(response.body);
-					
+
 					// Extract filename from URL or headers
 					const contentDisposition = response.headers['content-disposition'];
 					if (contentDisposition) {
@@ -373,7 +399,7 @@ export class GreenApiGetImage implements INodeType {
 						.replace('{messageId}', messageId)
 						.replace('{chatId}', chatId)
 						.replace('{originalName}', originalName);
-					
+
 					// Add extension if missing
 					if (!fileName.includes('.') && extension) {
 						fileName += `.${extension}`;
@@ -382,7 +408,7 @@ export class GreenApiGetImage implements INodeType {
 
 				// Get image type
 				// Use the helper method to determine image type
-				const imageType = this.getImageType(fileName);
+				const imageType = getImageType(fileName);
 				metadata.imageType = imageType;
 
 				// Prepare binary data
@@ -438,30 +464,5 @@ export class GreenApiGetImage implements INodeType {
 		return [returnData];
 	}
 
-	// Helper method to get nested values from objects
-	private getNestedValue(obj: any, path: string): any {
-		if (!path.includes('.')) {
-			return obj[path];
-		}
-		return path.split('.').reduce((current, key) => {
-			return current && typeof current === 'object' ? current[key] : undefined;
-		}, obj);
-	}
 
-	// Helper method to determine image type based on filename
-	private getImageType(fileName: string): string {
-		const extension = fileName.split('.').pop()?.toLowerCase();
-		const typeMap: { [key: string]: string } = {
-			jpg: 'JPEG Image',
-			jpeg: 'JPEG Image',
-			png: 'PNG Image',
-			gif: 'GIF Image',
-			webp: 'WebP Image',
-			bmp: 'BMP Image',
-			tiff: 'TIFF Image',
-			tif: 'TIFF Image',
-		};
-		return typeMap[extension || ''] || 'Unknown Image Format';
-	}
 }
-						

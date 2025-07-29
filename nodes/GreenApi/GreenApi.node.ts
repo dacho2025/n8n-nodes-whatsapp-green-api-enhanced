@@ -633,7 +633,7 @@ export class GreenApi implements INodeType {
 				placeholder: '3EB0C767D097B7C7C030',
 				description: 'ID of the message to quote (optional)',
 			},
-			
+
 			// פרמטרים עבור פעולות חדשות - Upload File
 			{
 				displayName: 'File Path',
@@ -673,7 +673,7 @@ export class GreenApi implements INodeType {
 				placeholder: 'Enter caption for the file',
 				description: 'Caption for the file (optional)',
 			},
-			
+
 			// פרמטרים עבור EditMessage
 			{
 				displayName: 'Message ID',
@@ -714,7 +714,7 @@ export class GreenApi implements INodeType {
 				placeholder: 'Updated message text',
 				description: 'The updated text for the message',
 			},
-			
+
 			// פרמטר לDeleteMessage
 			{
 				displayName: 'Delete for Sender Only',
@@ -733,7 +733,7 @@ export class GreenApi implements INodeType {
 				},
 				description: 'Whether to delete the message only from sender side',
 			},
-			
+
 			// פרמטרים לקבלת היסטוריית צ'אט
 			{
 				displayName: 'Chat ID',
@@ -772,7 +772,7 @@ export class GreenApi implements INodeType {
 				placeholder: '100',
 				description: 'Number of messages to get (default: 100)',
 			},
-			
+
 			// פרמטרים עבור פעולות קבוצה
 			{
 				displayName: 'Group Name',
@@ -880,7 +880,7 @@ export class GreenApi implements INodeType {
 				placeholder: 'C:/path/to/image.jpg',
 				description: 'Path to the JPG image for the group',
 			},
-			
+
 			// פרמטרים להבאת אנשי קשר
 			{
 				displayName: 'Group Only',
@@ -917,7 +917,7 @@ export class GreenApi implements INodeType {
 				placeholder: '10',
 				description: 'Number of contacts to return (0 for all)',
 			},
-			
+
 		],
 	};
 
@@ -966,8 +966,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to send message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1000,8 +1000,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send file: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to send file: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1037,8 +1037,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send poll: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to send poll: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1079,8 +1079,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send location: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to send location: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1133,8 +1133,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send contact: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to send contact: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1162,21 +1162,21 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to forward messages: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to forward messages: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
 					} else if (operation === 'uploadFile') {
 						// העלאת קובץ
 						const filePath = this.getNodeParameter('filePath', i) as string;
-						
+
 						// שימוש במימוש אחר להעלאת קבצים
 						const formData: IDataObject = {};
-						
+
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
-						
+
 						const currentItem = items[i];
 						const binaryData = currentItem?.binary;
 
@@ -1194,7 +1194,7 @@ export class GreenApi implements INodeType {
 							const fs = require('fs');
 							const path = require('path');
 							const fileName = path.basename(filePath);
-							
+
 							try {
 								const fileContent = fs.readFileSync(filePath);
 								formData.file = {
@@ -1224,8 +1224,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to upload file: ${error.message}`, 
+								this.getNode(),
+								`Failed to upload file: ${error.message}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1233,20 +1233,20 @@ export class GreenApi implements INodeType {
 						// שליחת קובץ באמצעות העלאה
 						const filePath = this.getNodeParameter('filePath', i) as string;
 						const caption = this.getNodeParameter('caption', i, '') as string;
-						
+
 						// שימוש במימוש אחר להעלאת קבצים
 						const formData: IDataObject = {
 							chatId,
 							caption,
 						};
-						
+
 						if (quotedMessageId) {
 							formData.quotedMessageId = quotedMessageId;
 						}
-						
+
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
-						
+
 						const currentItem = items[i];
 						const binaryData = currentItem?.binary;
 
@@ -1264,7 +1264,7 @@ export class GreenApi implements INodeType {
 							const fs = require('fs');
 							const path = require('path');
 							const fileName = path.basename(filePath);
-							
+
 							try {
 								const fileContent = fs.readFileSync(filePath);
 								formData.file = {
@@ -1294,8 +1294,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to send file by upload: ${error.message}`, 
+								this.getNode(),
+								`Failed to send file by upload: ${error.message}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1308,7 +1308,7 @@ export class GreenApi implements INodeType {
 							chatId,
 							idMessage,
 						};
-						
+
 						if (onlySenderDelete) {
 							body.onlySenderDelete = onlySenderDelete;
 						}
@@ -1325,8 +1325,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to delete message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to delete message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1353,8 +1353,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to edit message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to edit message: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1364,11 +1364,11 @@ export class GreenApi implements INodeType {
 					if (error.name === 'NodeOperationError') {
 						throw error;
 					}
-					
+
 					// אחרת נוסיף מידע כללי
 					throw new NodeOperationError(
-						this.getNode(), 
-						`Error processing operation ${operation}: ${error.message}`, 
+						this.getNode(),
+						`Error processing operation ${operation}: ${error.message}`,
 						{ itemIndex: i }
 					);
 				}
@@ -1396,8 +1396,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to get chat history: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to get chat history: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1407,11 +1407,11 @@ export class GreenApi implements INodeType {
 					if (error.name === 'NodeOperationError') {
 						throw error;
 					}
-					
+
 					// אחרת נוסיף מידע כללי
 					throw new NodeOperationError(
-						this.getNode(), 
-						`Error processing chat operation ${operation}: ${error.message}`, 
+						this.getNode(),
+						`Error processing chat operation ${operation}: ${error.message}`,
 						{ itemIndex: i }
 					);
 				}
@@ -1440,8 +1440,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to create group: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to create group: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1467,8 +1467,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to update group name: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to update group name: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1492,8 +1492,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to get group data: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to get group data: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1519,8 +1519,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to add group participant: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to add group participant: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1546,8 +1546,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to remove group participant: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to remove group participant: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1573,8 +1573,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to set group admin: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to set group admin: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1600,8 +1600,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to remove admin: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to remove admin: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1609,15 +1609,15 @@ export class GreenApi implements INodeType {
 						// הגדרת תמונת קבוצה
 						const groupId = this.getNodeParameter('groupId', i) as string;
 						const filePath = this.getNodeParameter('file', i) as string;
-						
+
 						// שימוש במימוש אחר להעלאת קבצים
 						const formData: IDataObject = {
 							groupId,
 						};
-						
+
 						const binaryPropertyName = 'data';
 						const items = this.getInputData();
-						
+
 						const currentItem = items[i];
 						const binaryData = currentItem?.binary;
 
@@ -1635,7 +1635,7 @@ export class GreenApi implements INodeType {
 							const fs = require('fs');
 							const path = require('path');
 							const fileName = path.basename(filePath);
-							
+
 							try {
 								const fileContent = fs.readFileSync(filePath);
 								formData.file = {
@@ -1665,8 +1665,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to set group picture: ${error.message}`, 
+								this.getNode(),
+								`Failed to set group picture: ${error.message}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1690,8 +1690,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to leave group: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to leave group: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1701,11 +1701,11 @@ export class GreenApi implements INodeType {
 					if (error.name === 'NodeOperationError') {
 						throw error;
 					}
-					
+
 					// אחרת נוסיף מידע כללי
 					throw new NodeOperationError(
-						this.getNode(), 
-						`Error processing group operation ${operation}: ${error.message}`, 
+						this.getNode(),
+						`Error processing group operation ${operation}: ${error.message}`,
 						{ itemIndex: i }
 					);
 				}
@@ -1717,11 +1717,11 @@ export class GreenApi implements INodeType {
 						const count = this.getNodeParameter('count', i) as number;
 
 						const body: IDataObject = {};
-						
+
 						if (onlyGroups) {
 							body.onlyGroups = true;
 						}
-						
+
 						if (count > 0) {
 							body.count = count;
 						}
@@ -1738,8 +1738,8 @@ export class GreenApi implements INodeType {
 							returnData.push(responseData as IDataObject);
 						} catch (error) {
 							throw new NodeOperationError(
-								this.getNode(), 
-								`Failed to get contacts: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`, 
+								this.getNode(),
+								`Failed to get contacts: ${error.message}\nData sent: ${JSON.stringify(body, null, 2)}`,
 								{ itemIndex: i }
 							);
 						}
@@ -1749,11 +1749,11 @@ export class GreenApi implements INodeType {
 					if (error.name === 'NodeOperationError') {
 						throw error;
 					}
-					
+
 					// אחרת נוסיף מידע כללי
 					throw new NodeOperationError(
-						this.getNode(), 
-						`Error processing contact operation ${operation}: ${error.message}`, 
+						this.getNode(),
+						`Error processing contact operation ${operation}: ${error.message}`,
 						{ itemIndex: i }
 					);
 				}

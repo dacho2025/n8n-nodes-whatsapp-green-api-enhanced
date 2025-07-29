@@ -41,9 +41,9 @@ export class GreenApiMessageTrigger implements INodeType {
 				type: 'multiOptions',
 				options: [
 					{
-						name: 'Text Messages',
-						value: 'textMessage',
-						description: 'Text messages only',
+						name: 'All Messages',
+						value: 'all',
+						description: 'Any type of message',
 					},
 					{
 						name: 'Audio Messages',
@@ -51,19 +51,14 @@ export class GreenApiMessageTrigger implements INodeType {
 						description: 'Voice messages and audio files',
 					},
 					{
-						name: 'Image Messages',
-						value: 'imageMessage',
-						description: 'Images and photos',
-					},
-					{
-						name: 'Video Messages',
-						value: 'videoMessage',
-						description: 'Video files',
-					},
-					{
 						name: 'Document Messages',
 						value: 'documentMessage',
 						description: 'Documents and files',
+					},
+					{
+						name: 'Image Messages',
+						value: 'imageMessage',
+						description: 'Images and photos',
 					},
 					{
 						name: 'Sticker Messages',
@@ -71,9 +66,14 @@ export class GreenApiMessageTrigger implements INodeType {
 						description: 'Stickers',
 					},
 					{
-						name: 'All Messages',
-						value: 'all',
-						description: 'Any type of message',
+						name: 'Text Messages',
+						value: 'textMessage',
+						description: 'Text messages only',
+					},
+					{
+						name: 'Video Messages',
+						value: 'videoMessage',
+						description: 'Video files',
 					},
 				],
 				default: ['all'],
@@ -117,10 +117,10 @@ export class GreenApiMessageTrigger implements INodeType {
 					},
 					{
 						displayName: 'Exclude Bot Messages',
-						name: 'excludeBot',
+						name: 'excludeBotMessages',
 						type: 'boolean',
 						default: true,
-						description: 'Exclude messages from your own bot',
+						description: 'Whether to exclude messages from bots',
 					},
 				],
 			},
@@ -152,7 +152,7 @@ export class GreenApiMessageTrigger implements INodeType {
 		}
 
 		const webhookData = bodyData as any;
-		
+
 		// Only process incoming messages
 		if (webhookData.typeWebhook !== 'incomingMessageReceived') {
 			return { noWebhookResponse: true };
@@ -193,7 +193,7 @@ export class GreenApiMessageTrigger implements INodeType {
 		}
 
 		// Exclude bot messages
-		if (quickFilters.excludeBot && messageData.isFromMe) {
+		if (quickFilters.excludeBotMessages && messageData.isFromMe) {
 			return { noWebhookResponse: true };
 		}
 

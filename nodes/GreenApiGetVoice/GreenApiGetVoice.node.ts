@@ -8,6 +8,16 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 
+// Helper function to get nested values from objects
+function getNestedValue(obj: any, path: string): any {
+	if (!path.includes('.')) {
+		return obj[path];
+	}
+	return path.split('.').reduce((current, key) => {
+		return current && typeof current === 'object' ? current[key] : undefined;
+	}, obj);
+}
+
 export class GreenApiGetVoice implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Green API Get Voice',
@@ -147,7 +157,7 @@ export class GreenApiGetVoice implements INodeType {
 						name: 'includeMetadata',
 						type: 'boolean',
 						default: true,
-						description: 'Include voice message metadata in the output',
+						description: 'Whether to include voice message metadata in the output',
 					},
 					{
 						displayName: 'Custom Filename',
@@ -155,7 +165,7 @@ export class GreenApiGetVoice implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'voice_{timestamp}',
-						description: 'Custom filename for the downloaded voice file. Use {timestamp}, {messageId}, {chatId} as placeholders',
+						description: 'Custom filename for the downloaded voice file. Use {timestamp}, {messageId}, {chatId} as placeholders.',
 					},
 				],
 			},
@@ -191,9 +201,9 @@ export class GreenApiGetVoice implements INodeType {
 					const chatIdField = this.getNodeParameter('chatIdField', i) as string;
 					const downloadUrlField = this.getNodeParameter('downloadUrlField', i) as string;
 
-					messageId = this.getNestedValue(items[i].json, messageIdField);
-					chatId = this.getNestedValue(items[i].json, chatIdField);
-					downloadUrl = this.getNestedValue(items[i].json, downloadUrlField);
+					messageId = getNestedValue(items[i].json, messageIdField);
+					chatId = getNestedValue(items[i].json, chatIdField);
+					downloadUrl = getNestedValue(items[i].json, downloadUrlField);
 				}
 
 				let voiceData: Buffer;
@@ -211,7 +221,7 @@ export class GreenApiGetVoice implements INodeType {
 					});
 
 					voiceData = Buffer.from(response.body);
-					
+
 					// Extract filename from URL or headers
 					const contentDisposition = response.headers['content-disposition'];
 					if (contentDisposition) {
@@ -289,7 +299,7 @@ export class GreenApiGetVoice implements INodeType {
 						.replace('{timestamp}', Date.now().toString())
 						.replace('{messageId}', messageId)
 						.replace('{chatId}', chatId);
-					
+
 					// Ensure it has proper extension
 					if (!fileName.includes('.')) {
 						fileName += '.ogg';
@@ -342,14 +352,5 @@ export class GreenApiGetVoice implements INodeType {
 		}
 
 		return [returnData];
-	}
-
-	private getNestedValue(obj: any, path: string): any {
-		if (!path.includes('.')) {
-			return obj[path];
-		}
-		return path.split('.').reduce((current, key) => {
-			return current && typeof current === 'object' ? current[key] : undefined;
-		}, obj);
 	}
 }
