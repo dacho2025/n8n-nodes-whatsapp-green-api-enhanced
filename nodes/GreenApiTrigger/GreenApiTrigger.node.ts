@@ -19,7 +19,7 @@ export class GreenApiTrigger implements INodeType {
 			name: 'Green API Trigger',
 		},
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'greenApi',
@@ -303,9 +303,42 @@ export class GreenApiTrigger implements INodeType {
 		console.log('Webhook received:', JSON.stringify(bodyData, null, 2));
 
 		if (!bodyData || typeof bodyData !== 'object') {
-			console.log('Invalid body data');
+			console.log('No webhook data - creating test response for manual execution');
+			
+			// Create different test data for manual execution to test all branches
+			const testData = {
+				eventType: 'incomingMessageReceived',
+				messageId: 'test-message-id-' + Date.now(),
+				chatId: 'test-chat-id@c.us',
+				senderId: 'test-sender@c.us',
+				timestamp: new Date().toISOString(),
+				isManualExecution: true,
+				
+				// Test different message types
+				typeMessage: 'voiceMessage', // Can be: voiceMessage, imageMessage, documentMessage, textMessage
+				textMessage: 'Test voice message for manual execution',
+				
+				// Test media data
+				downloadUrl: 'https://example.com/test-voice.mp3',
+				fileName: 'test-voice.mp3',
+				fileSize: 1024,
+				mimeType: 'audio/mp3',
+				caption: 'Test voice message caption',
+				
+				// Test metadata
+				chatName: 'Test Chat',
+				senderContactName: 'Test User',
+				isFromMe: false,
+			};
+			
 			return {
-				noWebhookResponse: true,
+				workflowData: [
+					[
+						{
+							json: testData,
+						},
+					],
+				],
 			};
 		}
 

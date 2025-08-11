@@ -53,8 +53,8 @@ export class GreenApiGetDocument implements INodeType {
 		defaults: {
 			name: 'Green API Get Document',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'greenApi',

@@ -29,8 +29,8 @@ export class GreenApi implements INodeType {
 		defaults: {
 			name: 'Green API',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		usableAsTool: true,
 		credentials: [
 			{

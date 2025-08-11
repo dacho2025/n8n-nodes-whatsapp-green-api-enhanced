@@ -19,7 +19,7 @@ export class GreenApiMessageTrigger implements INodeType {
 			name: 'Green API Message Trigger',
 		},
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'greenApi',
